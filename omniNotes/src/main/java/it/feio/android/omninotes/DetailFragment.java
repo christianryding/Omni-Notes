@@ -2320,21 +2320,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 							null, 0);
 					break;
 				case R.id.contact:
-
-					List<Integer> test = new ArrayList<Integer>();
-					test.add(5);
-					test.add(2);
-					test.add(7);
-					test.add(6);
-					test.add(8);
-
-					Intent intent = new Intent(getActivity(), ContactActivity.class);
-
-					intent.putIntegerArrayListExtra("test", (ArrayList<Integer>) test);
-					startActivity(intent);
-
 					checkContactPermission();
-					addContact();
+					Intent intent = new Intent(getActivity(), ContactActivity.class);
+					startActivity(intent);
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
@@ -2342,86 +2330,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			if (!isRecording) attachmentDialog.dismiss();
 		}
 	}
-
-
-
-
-
-	// add contact
-	private void addContact() {
-
-		ArrayList<Contact> listAndroidContacts = new ArrayList<Contact>();
-
-		//--< get all Contacts >--
-		Cursor contactCursor = null;
-		ContentResolver contentResolver = getContext().getContentResolver();
-		try {
-			contactCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-		} catch (Exception ex) {
-			Log.e("Error on contact", ex.getMessage());
-		}
-
-		// check if contacts exist
-		if (contactCursor.getCount() > 0) {
-
-			// loop all contacts
-			while (contactCursor.moveToNext()){
-				Contact android_contact = new Contact();
-				String contact_id = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
-
-				// test
-				String lookup_key = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-				Log.d("CONTACTS", "LOOKUP_KEY: " + lookup_key);
-
-				// get name
-				android_contact.fullName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-				Log.d("CONTACTS", "Name: " + android_contact.fullName );
-
-				// get phone numbers
-				int hasPhoneNumber = Integer.parseInt(contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
-				if (hasPhoneNumber > 0) {
-
-					Cursor phoneCursor = contentResolver.query(
-							ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-							, null
-							, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
-							, new String[]{contact_id}
-							, null);
-
-					while (phoneCursor.moveToNext()) {
-						String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-						android_contact.phoneNr = phoneNumber;
-						Log.d("CONTACT", android_contact.phoneNr);
-					}
-					phoneCursor.close();
-				}
-
-
-				// get emailaddress
-				Cursor mailCursor = contentResolver.query(
-						ContactsContract.CommonDataKinds.Email.CONTENT_URI
-						,null
-						,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?"
-						, new String[]{contact_id}
-						,null);
-
-				while (mailCursor.moveToNext()) {
-					String email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-					Log.d("CONTACTS","Email: " + email);
-//					if(email!=null){
-//						names.add(name);
-//					}
-				}
-				mailCursor.close();
-
-
-
-				// add contact to ArrayList
-				listAndroidContacts.add(android_contact);
-			}
-		}
-	}
-
 
 
 	/**
@@ -2458,14 +2366,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 						new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
 			}
 		}
-	}
-
-	// class for contacts information
-	private class Contact {
-		public String fullName = "";
-		public String phoneNr = "";
-		public String ID = "";
-		public String mailAddress = "";
 	}
 }
 
