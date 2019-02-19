@@ -33,7 +33,7 @@ public class ContactActivity extends AppCompatActivity {
         addContacts();
         initUI();
 
-        ListView listview = (ListView) findViewById(R.id.listview_contacts);
+        ListView listview = findViewById(R.id.listview_contacts);
 
         // return chosen contact
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -128,7 +128,6 @@ public class ContactActivity extends AppCompatActivity {
 
                 while (mailCursor.moveToNext()) {
                     String email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                    //Log.d("CONTACTS","Email: " + email);
 					if(email!=null){
 						android_contact.getMailAddresses().add(email);
 					}
