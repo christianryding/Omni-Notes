@@ -222,6 +222,7 @@
     <string name="uncompleted_checklists">Incompleted checklists</string>
     <string name="info">Info</string>
     <string name="completed">Completed</string>
+    <string name="contact">Contact</string>
 
     <!-- Settings -->
     <string name="dashclock_description">Displays some statistics and expiring reminders from Omni Notes</string>
