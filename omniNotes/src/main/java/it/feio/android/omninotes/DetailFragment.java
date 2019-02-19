@@ -21,12 +21,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -42,14 +45,17 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
@@ -1304,6 +1310,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		android.widget.TextView pushbulletSelection = (android.widget.TextView) layout.findViewById(R.id.pushbullet);
 		pushbulletSelection.setVisibility(View.VISIBLE);
 		pushbulletSelection.setOnClickListener(new AttachmentOnClickListener());
+		// Contact
+		android.widget.TextView contactSelection = (android.widget.TextView) layout.findViewById(R.id.contact);
+		contactSelection.setOnClickListener(new AttachmentOnClickListener());
+
 	}
 
 	private void takePhoto() {
@@ -2309,11 +2319,151 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 									R.drawable.ic_stat_literal_icon),
 							null, 0);
 					break;
+				case R.id.contact:
+
+					List<Integer> test = new ArrayList<Integer>();
+					test.add(5);
+					test.add(2);
+					test.add(7);
+
+					Intent intent = new Intent(getActivity(), ContactActivity.class);
+
+					intent.putIntegerArrayListExtra("test", (ArrayList<Integer>) test);
+					startActivity(intent);
+
+					checkContactPermission();
+					addContact();
+					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
 			}
 			if (!isRecording) attachmentDialog.dismiss();
 		}
+	}
+
+
+
+
+
+	// add contact
+	private void addContact() {
+
+		ArrayList<Contact> listAndroidContacts = new ArrayList<Contact>();
+
+		//--< get all Contacts >--
+		Cursor contactCursor = null;
+		ContentResolver contentResolver = getContext().getContentResolver();
+		try {
+			contactCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+		} catch (Exception ex) {
+			Log.e("Error on contact", ex.getMessage());
+		}
+
+		// check if contacts exist
+		if (contactCursor.getCount() > 0) {
+
+			// loop all contacts
+			while (contactCursor.moveToNext()){
+				Contact android_contact = new Contact();
+				String contact_id = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
+
+				// test
+				String lookup_key = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+				Log.d("CONTACTS", "LOOKUP_KEY: " + lookup_key);
+
+				// get name
+				android_contact.fullName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+				Log.d("CONTACTS", "Name: " + android_contact.fullName );
+
+				// get phone numbers
+				int hasPhoneNumber = Integer.parseInt(contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
+				if (hasPhoneNumber > 0) {
+
+					Cursor phoneCursor = contentResolver.query(
+							ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+							, null
+							, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
+							, new String[]{contact_id}
+							, null);
+
+					while (phoneCursor.moveToNext()) {
+						String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+						android_contact.phoneNr = phoneNumber;
+						Log.d("CONTACT", android_contact.phoneNr);
+					}
+					phoneCursor.close();
+				}
+
+
+				// get emailaddress
+				Cursor mailCursor = contentResolver.query(
+						ContactsContract.CommonDataKinds.Email.CONTENT_URI
+						,null
+						,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?"
+						, new String[]{contact_id}
+						,null);
+
+				while (mailCursor.moveToNext()) {
+					String email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+					Log.d("CONTACTS","Email: " + email);
+//					if(email!=null){
+//						names.add(name);
+//					}
+				}
+				mailCursor.close();
+
+
+
+				// add contact to ArrayList
+				listAndroidContacts.add(android_contact);
+			}
+		}
+	}
+
+
+
+	/**
+	 * RETURN BOOL, REMEMBER
+	 */
+	final int PERMISSION_REQUEST_CONTACTS = 100;
+	private void checkContactPermission() {
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
+				PackageManager.PERMISSION_GRANTED) {
+			Log.d("CONTACT", "permission granted");
+		}
+		else {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_CONTACTS)) {
+				new AlertDialog.Builder(getActivity())
+						.setTitle("Permission needed")
+						.setMessage("Need this permission to read contact information")
+						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i) {
+								ActivityCompat.requestPermissions(getActivity(),
+										new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
+							}
+						})
+						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i) {
+								dialogInterface.dismiss();
+							}
+						})
+						.create().show();
+			}
+			else {
+				ActivityCompat.requestPermissions(getActivity(),
+						new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
+			}
+		}
+	}
+
+	// class for contacts information
+	private class Contact {
+		public String fullName = "";
+		public String phoneNr = "";
+		public String ID = "";
+		public String mailAddress = "";
 	}
 }
 
