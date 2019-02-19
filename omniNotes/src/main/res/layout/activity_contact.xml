@@ -5,8 +5,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="false"
     android:orientation="vertical"
-    android:background="@color/gray_bg"
-    >
+    android:background="@color/gray_bg">
 
     <include android:id="@+id/toolbar" layout="@layout/toolbar"/>
 
@@ -14,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listview_contacts"
-        android:background="@color/white"/>
-
-
+        android:background="@color/white"
+        android:layout_margin="7dp"
+        android:dividerHeight="5dp"/>
 </LinearLayout>

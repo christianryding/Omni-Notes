@@ -33,7 +33,10 @@ public class ContactActivity extends AppCompatActivity {
         addContacts();
         initUI();
 
+        // listview that shows all contacts
         ListView listview = findViewById(R.id.listview_contacts);
+        ContactAdapter contactAdapter = new ContactAdapter();
+        listview.setAdapter(contactAdapter);
 
         // return chosen contact
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -50,10 +53,6 @@ public class ContactActivity extends AppCompatActivity {
             }
         });
 
-
-
-        ContactAdapter contactAdapter = new ContactAdapter();
-        listview.setAdapter(contactAdapter);
     }
 
     @Override
