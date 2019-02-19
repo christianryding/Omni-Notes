@@ -18,7 +18,7 @@
 apply plugin: 'com.android.application'
 
 boolean signConfigExists = project.hasProperty("SIGN_PROPS") && new File(project.property("SIGN_PROPS")).exists()
-if(signConfigExists) {
+if (signConfigExists) {
     Properties props = new Properties()
     props.load(new FileInputStream(file(project.property("SIGN_PROPS"))))
 
@@ -84,7 +84,7 @@ android {
                     outputFileName = "OmniNotes-${variant.name}-${variant.versionName}.apk"
                 }
             }
-            if(signConfigExists) {
+            if (signConfigExists) {
                 signingConfig signingConfigs.release
             }
         }
@@ -119,6 +119,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-all:1.9.5'
     testImplementation 'org.powermock:powermock:1.6.5'
@@ -128,7 +129,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation ('com.android.support.test.espresso:espresso-intents:3.0.2') {
+    androidTestImplementation('com.android.support.test.espresso:espresso-intents:3.0.2') {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
@@ -157,13 +158,13 @@ dependencies {
         transitive = true
     }
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-    implementation ('com.jakewharton:butterknife:8.5.1'){
+    implementation('com.jakewharton:butterknife:8.5.1') {
         exclude group: 'com.android.support'
     }
     implementation('org.mnode.ical4j:ical4j:1.0.6') {
         exclude group: 'commons.io'
     }
-    debugImplementation ('com.squareup.leakcanary:leakcanary-android:1.6.2') {
+    debugImplementation('com.squareup.leakcanary:leakcanary-android:1.6.2') {
         exclude group: "com.android.support"
     }
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
@@ -182,8 +183,8 @@ dependencies {
     }
     implementation 'com.github.federicoiosue:Springpad-Importer:1.0.1'
     implementation 'com.github.federicoiosue:Omni-Notes-Commons:1.2.0'
-    implementation ('com.github.federicoiosue:checklistview:3.2.1') {
-        transitive=false
+    implementation('com.github.federicoiosue:checklistview:3.2.1') {
+        transitive = false
     }
     implementation 'com.github.federicoiosue:pixlui:3.0.0'
 
@@ -193,22 +194,22 @@ dependencies {
     alphaImplementation 'io.nlopez.smartlocation:library:3.2.4'
     fossImplementation 'com.github.federicoiosue:smart-location-lib:3.2.6'
 
-    playImplementation ('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar'){
-        transitive=true
+    playImplementation('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar') {
+        transitive = true
     }
-    betaImplementation ('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar'){
-        transitive=true
+    betaImplementation('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar') {
+        transitive = true
     }
-    alphaImplementation ('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar'){
-        transitive=true
+    alphaImplementation('com.github.federicoiosue:analitica:0.0.3:googleAnalyticsRelease@aar') {
+        transitive = true
     }
-    fossImplementation ('com.github.federicoiosue:analitica:0.0.3:piwikRelease@aar'){
-        transitive=true
+    fossImplementation('com.github.federicoiosue:analitica:0.0.3:piwikRelease@aar') {
+        transitive = true
     }
     playImplementation 'com.google.android.gms:play-services-analytics:9.0.2'
     betaImplementation 'com.google.android.gms:play-services-analytics:9.0.2'
     alphaImplementation 'com.google.android.gms:play-services-analytics:9.0.2'
-    fossImplementation ('org.piwik.sdk:piwik-sdk:1.0.2'){
+    fossImplementation('org.piwik.sdk:piwik-sdk:1.0.2') {
         exclude group: 'com.jakewharton.timber', module: 'timber'
     }
     fossImplementation 'com.jakewharton.timber:timber:4.5.1'
