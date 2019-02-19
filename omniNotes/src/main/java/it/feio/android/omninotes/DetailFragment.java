@@ -2325,6 +2325,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					test.add(5);
 					test.add(2);
 					test.add(7);
+					test.add(6);
+					test.add(8);
 
 					Intent intent = new Intent(getActivity(), ContactActivity.class);
 
