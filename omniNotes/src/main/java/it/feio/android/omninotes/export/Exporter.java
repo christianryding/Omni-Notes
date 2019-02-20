@@ -4,6 +4,6 @@ import java.io.OutputStream;
 
 import it.feio.android.omninotes.models.Note;
 
-interface Exporter {
+public interface Exporter {
     void  export(Note note, OutputStream os);
 }

@@ -1,5 +1,8 @@
 package it.feio.android.omninotes.export;
 
+import android.util.Log;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -19,7 +22,14 @@ class ExporterImpl<T> implements Exporter {
 
     @Override
     public void export(Note note, OutputStream os) {
-        // Steps to export a note:
+        Log.d("export_tag", "Exporting note" + note.getTitle());
+        try {
+            os.write("Exported note".getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+      /*  // Steps to export a note:
         // 1. Translate note to nodes
         // 2. Call docExporter.create
         // 3. Call docExporter.write
@@ -43,6 +53,6 @@ class ExporterImpl<T> implements Exporter {
 
 
         // 3. Write document to storage
-        docExporter.write(os);
+        docExporter.write(os);*/
     }
 }

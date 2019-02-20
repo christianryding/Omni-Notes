@@ -108,9 +108,12 @@ import it.feio.android.omninotes.async.AttachmentTask;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
 import it.feio.android.omninotes.async.bus.PushbulletReplyEvent;
 import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
+import it.feio.android.omninotes.async.notes.ExportNoteTask;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.async.notes.SaveNoteTask;
 import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.export.Exporter;
+import it.feio.android.omninotes.export.ExporterFactory;
 import it.feio.android.omninotes.helpers.AttachmentsHelper;
 import it.feio.android.omninotes.helpers.PermissionsHelper;
 import it.feio.android.omninotes.helpers.date.DateHelper;
@@ -124,6 +127,7 @@ import it.feio.android.omninotes.models.adapters.NavDrawerCategoryAdapter;
 import it.feio.android.omninotes.models.adapters.PlacesAutoCompleteAdapter;
 import it.feio.android.omninotes.models.listeners.OnAttachingFileListener;
 import it.feio.android.omninotes.models.listeners.OnGeoUtilResultListener;
+import it.feio.android.omninotes.models.listeners.OnNoteExported;
 import it.feio.android.omninotes.models.listeners.OnNoteSaved;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
@@ -164,7 +168,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int CATEGORY = 5;
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
-	private static final int EXPORT_WRITE = 8;
+	private static final int EXPORT_TEXT = 8;
+	private static final int EXPORT_PDF = 9;
+	private static final int EXPORT_HTML = 10;
 	private static final int RC_READ_EXTERNAL_STORAGE_PERMISSION = 1;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
@@ -1441,8 +1447,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				case DETAIL:
 					mainActivity.showMessage(R.string.note_updated, ONStyle.CONFIRM);
 					break;
-				case EXPORT_WRITE:
-					onActivityResultManageExportWrite(intent);
+				case EXPORT_TEXT:
+				case EXPORT_HTML:
+				case EXPORT_PDF:
+					onActivityResultManageExportWrite(intent, requestCode);
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + requestCode);
@@ -1494,13 +1502,44 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 	}
 
-	private void onActivityResultManageExportWrite(Intent intent) {
-		Uri uri;
-		if (intent != null) {
-			uri = intent.getData();
-			Log.i("export_tag", "Uri: " + uri.toString());
-			// TODO: Start export task
+	private void onActivityResultManageExportWrite(Intent intent, int requestCode) {
+		if (intent == null) {
+			Log.d(Constants.TAG, "Export: intent was null.");
+			return;
 		}
+
+		final Uri uri = intent.getData();
+		if (uri == null) {
+			Log.d(Constants.TAG, "Export: getData returned null");
+			return;
+		}
+
+		// Decide what export to use
+		Exporter exporter;
+		switch(requestCode) {
+			case EXPORT_TEXT: exporter = ExporterFactory.createTextExporter(); break;
+			case EXPORT_HTML: exporter = ExporterFactory.createTextExporter(); break;
+			case EXPORT_PDF: exporter = ExporterFactory.createTextExporter(); break;
+			default:
+				Log.d(Constants.TAG, "Export: Wrong export request code.");
+				return;
+		}
+
+		final OnNoteExported onNoteExported = exportedOk -> {
+			// TODO: Add strings for messages
+			if (exportedOk) {
+				mainActivity.showToast("Note exported", Toast.LENGTH_LONG);
+			} else {
+				mainActivity.showToast("Couldn't export note!", Toast.LENGTH_LONG);
+			}
+		};
+
+		final OnNoteSaved onNoteSaved = note -> {
+			new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
+		};
+
+		// Start by first saving the note, seems most logical. After that the note will be exported.
+		new SaveNoteTask(onNoteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteOriginal);
 	}
 
 	@SuppressLint("NewApi")
@@ -1512,6 +1551,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 
 		// TODO: Show a dialog to let the user select file type
+		/*
+		EXPORT_TEXT
+		EXPORT_PDF
+		EXPORT_HTML
+		*/
 
 		String fileName = getNoteTitle();
 		if (fileName.isEmpty()) {
@@ -1523,7 +1567,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		intent.setType("text/plain");
 		intent.putExtra(Intent.EXTRA_TITLE, fileName);
-		startActivityForResult(intent, EXPORT_WRITE);
+		startActivityForResult(intent, EXPORT_TEXT);
 	}
 
 	@SuppressLint("NewApi")
