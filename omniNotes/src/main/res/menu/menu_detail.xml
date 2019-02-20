@@ -77,6 +77,12 @@
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/menu_export"
+        android:orderInCategory="750"
+        android:title="@string/export"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/menu_archive"
         android:icon="@drawable/ic_archive_black_48dp"
         android:orderInCategory="800"

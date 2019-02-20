@@ -1014,6 +1014,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			// Otherwise all other actions will be available
 		} else {
 			menu.findItem(R.id.menu_add_shortcut).setVisible(!newNote);
+			menu.findItem(R.id.menu_export).setVisible(!newNote);
 			menu.findItem(R.id.menu_archive).setVisible(!newNote && !noteTmp.isArchived());
 			menu.findItem(R.id.menu_unarchive).setVisible(!newNote && noteTmp.isArchived());
 			menu.findItem(R.id.menu_trash).setVisible(!newNote);
@@ -1086,6 +1087,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				break;
 			case R.id.menu_add_shortcut:
 				addShortcut();
+				break;
+			case R.id.menu_export:
+				exportNote();
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -1484,6 +1488,19 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		} else {
 			goHome();
 		}
+	}
+
+	private void exportNote() {
+		// Simply go back if is a new note
+		if (noteTmp.get_id() == null) {
+			goHome();
+			return;
+		}
+
+		Note exportedNote = new Note(noteTmp);
+		exportedNote.setTitle(getNoteTitle());
+		exportedNote.setContent(getNoteContent());
+		Log.d(Constants.TAG, "Note exported...");
 	}
 
 	@SuppressLint("NewApi")
