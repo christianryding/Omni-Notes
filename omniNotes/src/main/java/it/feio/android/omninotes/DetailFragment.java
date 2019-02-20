@@ -164,6 +164,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int CATEGORY = 5;
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
+	private static final int EXPORT_WRITE = 8;
 	private static final int RC_READ_EXTERNAL_STORAGE_PERMISSION = 1;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
@@ -1440,6 +1441,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				case DETAIL:
 					mainActivity.showMessage(R.string.note_updated, ONStyle.CONFIRM);
 					break;
+				case EXPORT_WRITE:
+					onActivityResultManageExportWrite(intent);
+					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + requestCode);
 			}
@@ -1490,6 +1494,16 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 	}
 
+	private void onActivityResultManageExportWrite(Intent intent) {
+		Uri uri;
+		if (intent != null) {
+			uri = intent.getData();
+			Log.i("export_tag", "Uri: " + uri.toString());
+			// TODO: Start export task
+		}
+	}
+
+	@SuppressLint("NewApi")
 	private void exportNote() {
 		// Simply go back if is a new note
 		if (noteTmp.get_id() == null) {
@@ -1497,10 +1511,19 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			return;
 		}
 
-		Note exportedNote = new Note(noteTmp);
-		exportedNote.setTitle(getNoteTitle());
-		exportedNote.setContent(getNoteContent());
-		Log.d(Constants.TAG, "Note exported...");
+		// TODO: Show a dialog to let the user select file type
+
+		String fileName = getNoteTitle();
+		if (fileName.isEmpty()) {
+			fileName = "untitled";
+		}
+		fileName += ".txt";
+
+		Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TITLE, fileName);
+		startActivityForResult(intent, EXPORT_WRITE);
 	}
 
 	@SuppressLint("NewApi")
