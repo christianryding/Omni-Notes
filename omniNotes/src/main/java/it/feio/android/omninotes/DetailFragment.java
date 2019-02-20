@@ -2266,6 +2266,42 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	}
 
 	/**
+	 *
+	 */
+	final int PERMISSION_REQUEST_CONTACTS = 100;
+	private void checkContactPermission() {
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
+				PackageManager.PERMISSION_GRANTED) {
+			Log.d("CONTACT", "permission granted");
+		}
+		else {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_CONTACTS)) {
+				new AlertDialog.Builder(getActivity())
+						.setTitle("Permission needed")
+						.setMessage("Need this permission to read contact information")
+						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i) {
+								ActivityCompat.requestPermissions(getActivity(),
+										new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
+							}
+						})
+						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i) {
+								dialogInterface.dismiss();
+							}
+						})
+						.create().show();
+			}
+			else {
+				ActivityCompat.requestPermissions(getActivity(),
+						new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
+			}
+		}
+	}
+
+	/**
 	 * Manages clicks on attachment dialog
 	 */
 	@SuppressLint("InlinedApi")
@@ -2323,6 +2359,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					checkContactPermission();
 					Intent intent = new Intent(getActivity(), ContactActivity.class);
 					startActivity(intent);
+					addContact();
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
@@ -2332,41 +2369,30 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	}
 
 
-	/**
-	 * RETURN BOOL, REMEMBER
-	 */
-	final int PERMISSION_REQUEST_CONTACTS = 100;
-	private void checkContactPermission() {
-		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
-				PackageManager.PERMISSION_GRANTED) {
-			Log.d("CONTACT", "permission granted");
-		}
-		else {
-			if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_CONTACTS)) {
-				new AlertDialog.Builder(getActivity())
-						.setTitle("Permission needed")
-						.setMessage("Need this permission to read contact information")
-						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialogInterface, int i) {
-								ActivityCompat.requestPermissions(getActivity(),
-										new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
-							}
-						})
-						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialogInterface, int i) {
-								dialogInterface.dismiss();
-							}
-						})
-						.create().show();
-			}
-			else {
-				ActivityCompat.requestPermissions(getActivity(),
-						new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
+
+
+
+	private void addContact() {
+		Editable editable = content.getText();
+		int position = content.getSelectionStart();
+		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		String dateStamp = dateFormat.format(new Date().getTime()) + " ";
+		if (noteTmp.isChecklist()) {
+			if (mChecklistManager.getFocusedItemView() != null) {
+				editable = mChecklistManager.getFocusedItemView().getEditText().getEditableText();
+				position = mChecklistManager.getFocusedItemView().getEditText().getSelectionStart();
+			} else {
+				((CheckListView) toggleChecklistView)
+						.addItem(dateStamp, false, mChecklistManager.getCount());
 			}
 		}
+		String leadSpace = position == 0 ? "" : " ";
+		dateStamp = leadSpace + dateStamp;
+		editable.insert(position, dateStamp);
+		Selection.setSelection(editable, position + dateStamp.length());
 	}
+
+
 }
 
 

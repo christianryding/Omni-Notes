@@ -48,8 +48,7 @@ public class ContactActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT);
                 toast.show();
 
-
-                //finish();
+                finish();
             }
         });
 
