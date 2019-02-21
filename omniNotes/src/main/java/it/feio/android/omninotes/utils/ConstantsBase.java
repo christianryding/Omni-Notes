@@ -108,6 +108,8 @@ public interface ConstantsBase {
 	String MIME_TYPE_SKETCH = "image/png";
 	String MIME_TYPE_FILES = "file/*";
 
+	String MIME_TYPE_URI = "text/uri-list";
+
 	String MIME_TYPE_IMAGE_EXT = ".jpeg";
 	String MIME_TYPE_AUDIO_EXT = ".amr";
 	String MIME_TYPE_VIDEO_EXT = ".mp4";

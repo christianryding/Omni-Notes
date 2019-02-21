@@ -52,14 +52,20 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.MimeTypeFilter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.Html;
 import android.text.Selection;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -162,6 +168,9 @@ import static java.lang.Long.parseLong;
 public class DetailFragment extends BaseFragment implements OnReminderPickedListener, OnTouchListener,
 		OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnNoteSaved,
 		OnGeoUtilResultListener {
+
+	private static final int PICK_CONTACT = 8;
+	private static final int PERMISSION_REQUEST_CONTACTS = 100;
 
 	private static final int TAKE_PHOTO = 1;
 	private static final int TAKE_VIDEO = 2;
@@ -1336,6 +1345,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		startActivityForResult(intent, TAKE_PHOTO);
 	}
 
+
+
 	private void takeVideo() {
 		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 		if (!IntentChecker.isAvailable(mainActivity, takeVideoIntent, new String[]{PackageManager.FEATURE_CAMERA})) {
@@ -1408,6 +1419,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	@SuppressLint("NewApi")
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
 		// Fetch uri from activities, store into adapter and refresh adapter
 		Attachment attachment;
 		if (resultCode == Activity.RESULT_OK) {
@@ -1432,7 +1444,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					lockUnlock();
 					break;
 				case SKETCH:
-					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_SKETCH);
+					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_FILES);
 					addAttachment(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -1442,6 +1454,66 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					Category category = intent.getParcelableExtra("category");
 					noteTmp.setCategory(category);
 					setTagMarkerColor(category);
+					break;
+					// new test!!!
+				case PICK_CONTACT:
+
+					addContact(intent.getData());
+
+					// open contact
+//					Uri contactData = intent.getData();
+//					String number = "";
+//					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
+//					cursor.moveToFirst(); // or cursor.moveToFirst() if single contact was selected.
+//					long id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+//					String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+//					Intent intent22 = new Intent(Intent.ACTION_VIEW);
+//					intent22.setData(ContactsContract.Contacts.getLookupUri(id, lookupKey));
+//					try {
+//						getContext().startActivity(intent22);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+
+
+
+
+
+//					Log.d("INTENT", "intent: " + intent.getData());
+//					Uri contactData = intent.getData();
+//					String number = "";
+//					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
+//					cursor.moveToFirst();
+//					String hasPhone = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+//					String contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+//					if (hasPhone.equals("1")) {
+//						Cursor phones = getContext().getContentResolver().query
+//								(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+//										ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+//												+ " = " + contactId, null, null);
+//						while (phones.moveToNext()) {
+//							number = phones.getString(phones.getColumnIndex
+//									(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("[-() ]", "");
+//
+//							Toast.makeText(getContext(), "This contact has phone number: " + number, Toast.LENGTH_LONG).show();
+//						}
+//						phones.close();
+//						//Do something with number
+//					}
+//					else {
+//						Toast.makeText(getContext(), "This contact has no phone number", Toast.LENGTH_LONG).show();
+//					}
+//					cursor.close();
+
+
+
+
+
+//					attachmentUri = intent.getData();
+//					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_CONTACT_EXT);
+//					addAttachment(attachment);
+//					mAttachmentAdapter.notifyDataSetChanged();
+//					mGridView.autoresize();
 					break;
 				case DETAIL:
 					mainActivity.showMessage(R.string.note_updated, ONStyle.CONFIRM);
@@ -2265,10 +2337,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 	}
 
-	/**
-	 *
-	 */
-	final int PERMISSION_REQUEST_CONTACTS = 100;
+
+
+
 	private void checkContactPermission() {
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
 				PackageManager.PERMISSION_GRANTED) {
@@ -2357,9 +2428,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					break;
 				case R.id.contact:
 					checkContactPermission();
-					Intent intent = new Intent(getActivity(), ContactActivity.class);
-					startActivity(intent);
-					addContact();
+
+					Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+					startActivityForResult(intent, PICK_CONTACT);
+
+					//Intent intent2 = new Intent(getActivity(), ContactActivity.class);
+					//startActivity(intent2);
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
@@ -2371,11 +2445,15 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 
 
-
-	private void addContact() {
+	private void addContact(Uri contact) {
 		Editable editable = content.getText();
+
+		//Log.d("TTTT", editable.toString());
+
 		int position = content.getSelectionStart();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
+		// test
 		String dateStamp = dateFormat.format(new Date().getTime()) + " ";
 		if (noteTmp.isChecklist()) {
 			if (mChecklistManager.getFocusedItemView() != null) {
@@ -2386,9 +2464,22 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 						.addItem(dateStamp, false, mChecklistManager.getCount());
 			}
 		}
+
+		SpannableString spannableString = new SpannableString(contact.toString());
+		ClickableSpan clickableSpan = new ClickableSpan() {
+			@Override
+			public void onClick(@NonNull View view) {
+				Log.d("TEST", "clickable!!");
+			}
+		};
+		spannableString.setSpan(clickableSpan,0,10, SpannedString.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
 		String leadSpace = position == 0 ? "" : " ";
-		dateStamp = leadSpace + dateStamp;
-		editable.insert(position, dateStamp);
+		//dateStamp = leadSpace + dateStamp;
+		//editable.insert(position, dateStamp);
+		editable.insert(position, spannableString);
+
 		Selection.setSelection(editable, position + dateStamp.length());
 	}
 

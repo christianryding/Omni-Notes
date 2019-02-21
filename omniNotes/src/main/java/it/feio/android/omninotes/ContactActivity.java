@@ -92,6 +92,7 @@ public class ContactActivity extends AppCompatActivity {
 
                 // test LOOKUPKEY
                 String lookup_key = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                Log.d("CONTACTS", "CONTACT ID: " + contact_id);
                 Log.d("CONTACTS", "LOOKUP_KEY: " + lookup_key);
 
                 // get name
