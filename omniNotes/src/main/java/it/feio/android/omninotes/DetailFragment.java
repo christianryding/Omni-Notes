@@ -775,16 +775,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
-			// if contact attachment is clicked
 			else if (Constants.MIME_TYPE_URI.equals(attachment.getMime_type())) {
-				Log.d("TEST", "MIMETYPE fungerer");
-				Log.d("TEST", "Contact URI: " + attachment.getUri().toString());
-				Toast.makeText(getContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
 
-				// open contact information
+				// if contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
 				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
-				cursor.moveToFirst(); // or cursor.moveToFirst() if single contact was selected.
+				cursor.moveToFirst();
 				long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 				String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 				Intent contactIntent = new Intent(Intent.ACTION_VIEW);
@@ -796,8 +792,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					e.printStackTrace();
 				}
 
-			}
-			else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
+			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
 				// Title
@@ -1349,10 +1344,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 	}
 
-	private void addContact(){
-		//Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-		//startActivityForResult(intent, PICK_CONTACT);
-
+	private void chooseContact(){
 		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 		startActivityForResult(intent, PICK_CONTACT);
 	}
@@ -2409,7 +2401,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				case R.id.contact:
 					checkContactPermission();
 					// add check for permission with if statement - ifreadcontacts==true()
-					addContact();
+					chooseContact();
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
