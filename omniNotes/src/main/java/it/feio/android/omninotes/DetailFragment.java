@@ -759,6 +759,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
 			Uri uri = attachment.getUri();
 			Intent attachmentIntent;
+			Log.d("TEST", "MIMETYPE is: " + attachment.getMime_type());
 			if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
 
 				attachmentIntent = new Intent(Intent.ACTION_VIEW);
@@ -773,7 +774,30 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				}
 
 				// Media files will be opened in internal gallery
-			} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
+			}
+			else if (Constants.MIME_TYPE_URI.equals(attachment.getMime_type())) {
+				Log.d("TEST", "MIMETYPE fungerer");
+				Log.d("TEST", "Contact URI: " + attachment.getUri().toString());
+
+
+
+				// open contact
+				Uri contactData = attachment.getUri();
+				String number = "";
+				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
+				cursor.moveToFirst(); // or cursor.moveToFirst() if single contact was selected.
+				long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+				String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+				Intent intent22 = new Intent(Intent.ACTION_VIEW);
+				intent22.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
+				try {
+					getContext().startActivity(intent22);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+			else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
 				// Title
@@ -1325,6 +1349,22 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 	}
 
+	private void addContact(){
+		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+		//Intent intent = new Intent(Intent.ACTION_PICK, attachmentUri);
+		//intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+
+		//intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		//intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+
+		startActivityForResult(intent, PICK_CONTACT);
+
+
+		//Intent intent2 = new Intent(getActivity(), ContactActivity.class);
+		//startActivity(intent2);
+
+	}
+
 	private void takePhoto() {
 		// Checks for camera app available
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1458,7 +1498,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					// new test!!!
 				case PICK_CONTACT:
 
-					addContact(intent.getData());
+
+					//addContact(intent.getData());
 
 					// open contact
 //					Uri contactData = intent.getData();
@@ -1508,12 +1549,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 
 
-
-//					attachmentUri = intent.getData();
-//					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_CONTACT_EXT);
-//					addAttachment(attachment);
-//					mAttachmentAdapter.notifyDataSetChanged();
-//					mGridView.autoresize();
+					Log.d("TEST", "Chosen kontakt" + intent.getData().toString());
+					attachmentUri = intent.getData();
+					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_URI);
+					addAttachment(attachment);
+					mAttachmentAdapter.notifyDataSetChanged();
+					mGridView.autoresize();
 					break;
 				case DETAIL:
 					mainActivity.showMessage(R.string.note_updated, ONStyle.CONFIRM);
@@ -2428,12 +2469,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					break;
 				case R.id.contact:
 					checkContactPermission();
-
-					Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-					startActivityForResult(intent, PICK_CONTACT);
-
-					//Intent intent2 = new Intent(getActivity(), ContactActivity.class);
-					//startActivity(intent2);
+					addContact();
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
@@ -2441,49 +2477,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			if (!isRecording) attachmentDialog.dismiss();
 		}
 	}
-
-
-
-
-	private void addContact(Uri contact) {
-		Editable editable = content.getText();
-
-		//Log.d("TTTT", editable.toString());
-
-		int position = content.getSelectionStart();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-
-		// test
-		String dateStamp = dateFormat.format(new Date().getTime()) + " ";
-		if (noteTmp.isChecklist()) {
-			if (mChecklistManager.getFocusedItemView() != null) {
-				editable = mChecklistManager.getFocusedItemView().getEditText().getEditableText();
-				position = mChecklistManager.getFocusedItemView().getEditText().getSelectionStart();
-			} else {
-				((CheckListView) toggleChecklistView)
-						.addItem(dateStamp, false, mChecklistManager.getCount());
-			}
-		}
-
-		SpannableString spannableString = new SpannableString(contact.toString());
-		ClickableSpan clickableSpan = new ClickableSpan() {
-			@Override
-			public void onClick(@NonNull View view) {
-				Log.d("TEST", "clickable!!");
-			}
-		};
-		spannableString.setSpan(clickableSpan,0,10, SpannedString.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-		String leadSpace = position == 0 ? "" : " ";
-		//dateStamp = leadSpace + dateStamp;
-		//editable.insert(position, dateStamp);
-		editable.insert(position, spannableString);
-
-		Selection.setSelection(editable, position + dateStamp.length());
-	}
-
-
 }
 
 
