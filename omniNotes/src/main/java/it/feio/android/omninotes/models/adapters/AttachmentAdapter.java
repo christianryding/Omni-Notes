@@ -18,7 +18,9 @@ package it.feio.android.omninotes.models.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -122,6 +124,22 @@ public class AttachmentAdapter extends BaseAdapter {
         // Draw name in case the type is an audio recording (or file in the future)
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_FILES)) {
             holder.text.setText(mAttachment.getName());
+            holder.text.setVisibility(View.VISIBLE);
+        }
+
+        // Set contacts name
+        if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_URI)) {
+
+            String name = "";
+            int idx;
+            Cursor cursor = convertView.getContext().getContentResolver().query(mAttachment.getUri(), null, null, null, null);
+            if (cursor.moveToFirst()) {
+                idx = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                name = cursor.getString(idx);
+            }
+
+            Log.d("XXX", "name: " + name);
+            holder.text.setText(name);
             holder.text.setVisibility(View.VISIBLE);
         }
 
