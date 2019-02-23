@@ -1354,15 +1354,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		//Intent intent = new Intent(Intent.ACTION_PICK, attachmentUri);
 		//intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
 
-		//intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		//intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
 
 		startActivityForResult(intent, PICK_CONTACT);
-
-
-		//Intent intent2 = new Intent(getActivity(), ContactActivity.class);
-		//startActivity(intent2);
-
 	}
 
 	private void takePhoto() {
@@ -1497,58 +1492,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					break;
 					// new test!!!
 				case PICK_CONTACT:
-
-
-					//addContact(intent.getData());
-
-					// open contact
-//					Uri contactData = intent.getData();
-//					String number = "";
-//					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
-//					cursor.moveToFirst(); // or cursor.moveToFirst() if single contact was selected.
-//					long id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-//					String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-//					Intent intent22 = new Intent(Intent.ACTION_VIEW);
-//					intent22.setData(ContactsContract.Contacts.getLookupUri(id, lookupKey));
-//					try {
-//						getContext().startActivity(intent22);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-
-
-
-
-
-//					Log.d("INTENT", "intent: " + intent.getData());
-//					Uri contactData = intent.getData();
-//					String number = "";
-//					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
-//					cursor.moveToFirst();
-//					String hasPhone = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-//					String contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-//					if (hasPhone.equals("1")) {
-//						Cursor phones = getContext().getContentResolver().query
-//								(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-//										ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-//												+ " = " + contactId, null, null);
-//						while (phones.moveToNext()) {
-//							number = phones.getString(phones.getColumnIndex
-//									(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("[-() ]", "");
-//
-//							Toast.makeText(getContext(), "This contact has phone number: " + number, Toast.LENGTH_LONG).show();
-//						}
-//						phones.close();
-//						//Do something with number
-//					}
-//					else {
-//						Toast.makeText(getContext(), "This contact has no phone number", Toast.LENGTH_LONG).show();
-//					}
-//					cursor.close();
-
-
-
-
+					
 					Log.d("TEST", "Chosen kontakt" + intent.getData().toString());
 					attachmentUri = intent.getData();
 					attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_URI);
@@ -2469,6 +2413,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					break;
 				case R.id.contact:
 					checkContactPermission();
+					// add check for permission with if statement - ifreadcontacts==true()
 					addContact();
 					break;
 				default:
