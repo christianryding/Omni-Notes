@@ -21,9 +21,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -49,23 +47,15 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.MimeTypeFilter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.Html;
 import android.text.Selection;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -775,7 +765,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
-			else if (Constants.MIME_TYPE_URI.equals(attachment.getMime_type())) {
+			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
 
 				// if contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
@@ -1480,9 +1470,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					mGridView.autoresize();
 					break;
 				case PICK_CONTACT:
-					Log.d("TEST", "Chosen contact" + intent.getData().toString());
-
-					attachment = new Attachment(intent.getData(), Constants.MIME_TYPE_URI);
+					attachment = new Attachment(intent.getData(), Constants.MIME_TYPE_CONTACT);
 					addAttachment(attachment);
 					mAttachmentAdapter.notifyDataSetChanged();
 					mGridView.autoresize();
@@ -2209,6 +2197,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				snackBarPlaceholder, this::startGetContentAction);
 	}
 
+	private void askReadContactsPermission() {
+		PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
+				R.string.permission_contact_attachment,
+				snackBarPlaceholder, this::chooseContact);
+	}
+
 	public void onEventMainThread(PushbulletReplyEvent pushbulletReplyEvent) {
 		String text = getNoteContent() + System.getProperty("line.separator") + pushbulletReplyEvent.message;
 		content.setText(text);
@@ -2310,40 +2304,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	}
 
 
-
-
-	private void checkContactPermission() {
-		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
-				PackageManager.PERMISSION_GRANTED) {
-			Log.d("CONTACT", "permission granted");
-		}
-		else {
-			if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_CONTACTS)) {
-				new AlertDialog.Builder(getActivity())
-						.setTitle("Permission needed")
-						.setMessage("Need this permission to read contact information")
-						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialogInterface, int i) {
-								ActivityCompat.requestPermissions(getActivity(),
-										new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
-							}
-						})
-						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialogInterface, int i) {
-								dialogInterface.dismiss();
-							}
-						})
-						.create().show();
-			}
-			else {
-				ActivityCompat.requestPermissions(getActivity(),
-						new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CONTACTS);
-			}
-		}
-	}
-
 	/**
 	 * Manages clicks on attachment dialog
 	 */
@@ -2399,9 +2359,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 							null, 0);
 					break;
 				case R.id.contact:
-					checkContactPermission();
-					// add check for permission with if statement - ifreadcontacts==true()
-					chooseContact();
+					if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
+							PackageManager.PERMISSION_GRANTED) {
+						chooseContact();
+					} else {
+						askReadContactsPermission();
+					}
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
@@ -2409,6 +2372,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			if (!isRecording) attachmentDialog.dismiss();
 		}
 	}
+
+
+
+
+
 }
 
 

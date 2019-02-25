@@ -128,17 +128,17 @@ public class AttachmentAdapter extends BaseAdapter {
         }
 
         // Set contacts name
-        if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_URI)) {
+        if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
 
             String name = "";
-            int idx;
+            int id;
+
             Cursor cursor = convertView.getContext().getContentResolver().query(mAttachment.getUri(), null, null, null, null);
             if (cursor.moveToFirst()) {
-                idx = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-                name = cursor.getString(idx);
+                id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                name = cursor.getString(id);
             }
 
-            Log.d("XXX", "name: " + name);
             holder.text.setText(name);
             holder.text.setVisibility(View.VISIBLE);
         }
