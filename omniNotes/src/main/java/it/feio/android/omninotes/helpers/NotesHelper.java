@@ -132,7 +132,7 @@ public class NotesHelper {
 		infos.setWords(words);
 		infos.setChars(chars);
 
-		int attachmentsAll = 0, images = 0, videos = 0, audioRecordings = 0, sketches = 0, files = 0;
+		int attachmentsAll = 0, images = 0, contacts = 0, videos = 0, audioRecordings = 0, sketches = 0, files = 0;
 		for (Attachment attachment : note.getAttachmentsList()) {
 			if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())) {
 				images++;
@@ -144,6 +144,8 @@ public class NotesHelper {
 				sketches++;
 			} else if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
 				files++;
+			} else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())){
+				contacts++;
 			}
 		}
 		infos.setAttachments(attachmentsAll);
@@ -152,6 +154,7 @@ public class NotesHelper {
 		infos.setAudioRecordings(audioRecordings);
 		infos.setSketches(sketches);
 		infos.setFiles(files);
+		infos.setContacts(contacts);
 
 		if (note.getCategory() != null) {
 			infos.setCategoryName(note.getCategory().getName());

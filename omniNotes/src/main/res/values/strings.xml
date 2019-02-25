@@ -189,6 +189,7 @@
     <string name="image">Image</string>
     <string name="error">Error</string>
     <string name="archived">archived</string>
+    <string name="contacts">Contacts</string>
     <string name="files">Files</string>
     <string name="merge">Merge</string>
     <string name="delete_merged">Delete original notes after merging?</string>

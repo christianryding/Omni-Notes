@@ -56,6 +56,8 @@ public class NoteInfosActivity extends Activity {
 	TextView sketches;
 	@BindView(R.id.note_infos_files)
 	TextView files;
+	@BindView(R.id.note_infos_contacts)
+	TextView contacts;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class NoteInfosActivity extends Activity {
 		populateView(audioRecordings, infos.getAudioRecordings());
 		populateView(sketches, infos.getSketches());
 		populateView(files, infos.getFiles());
+		populateView(contacts, infos.getContacts());
 	}
 
 	private void populateView(TextView textView, int numberValue) {

@@ -313,6 +313,33 @@
             </TextView>
         </TableRow>
 
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
+                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
+                android:text="@string/contacts"
+                android:textStyle="bold">
+            </TextView>
+
+            <TextView
+                android:id="@+id/note_infos_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </TextView>
+        </TableRow>
+
+
     </TableLayout>
 
 </LinearLayout>

@@ -18,6 +18,8 @@
 
 package it.feio.android.omninotes.models;
 
+import android.util.Log;
+
 public class StatsSingleNote {
 
 	protected int tags;
@@ -27,6 +29,7 @@ public class StatsSingleNote {
 	protected int audioRecordings;
 	protected int sketches;
 	protected int files;
+	protected  int contacts;
 	protected String categoryName;
 
 	protected int words;
@@ -34,6 +37,10 @@ public class StatsSingleNote {
 
 	protected int checklistItemsNumber;
 	protected int checklistCompletedItemsNumber;
+
+	public int getContacts() { return contacts;	}
+
+	public void setContacts(int contacts) { this.contacts = contacts; }
 
 	public int getTags() {
 		return tags;
@@ -43,9 +50,7 @@ public class StatsSingleNote {
 		this.tags = tags;
 	}
 
-	public int getWords() {
-		return words;
-	}
+	public int getWords() {	return words; }
 
 	public void setWords(int words) {
 		this.words = words;
