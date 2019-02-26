@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +140,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
             String name = "";
             int id;
-            Bitmap thumbnailBm;
+            Bitmap thumbnailBm = null;
 
             // Get contacts name
             Cursor cursor = convertView.getContext().getContentResolver().query(
@@ -157,13 +158,17 @@ public class AttachmentAdapter extends BaseAdapter {
             holder.text.setText(name);
             holder.text.setVisibility(View.VISIBLE);
 
-            // Get contacts photo
-            InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
-                    convertView.getContext().getContentResolver()
-                    , mAttachment.getUri()
-                    , true);
-            thumbnailBm = BitmapFactory.decodeStream(s);
-            
+            try {
+                // Get contacts photo
+                InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
+                        convertView.getContext().getContentResolver()
+                        , mAttachment.getUri()
+                        , true);
+                thumbnailBm = BitmapFactory.decodeStream(s);
+                s.close();
+            }catch(Exception ioExc){
+
+            }
 
             // Load contacts thumbnail picture if available
             if (thumbnailBm == null) {

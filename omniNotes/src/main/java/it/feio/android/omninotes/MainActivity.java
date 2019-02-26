@@ -458,7 +458,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 + System.getProperty("line.separator")
                 + note.getContent();
 
-
         Intent shareIntent = new Intent();
         // Prepare sharing intent with only text
         if (note.getAttachmentsList().size() == 0) {
@@ -479,6 +478,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             // A check to decide the mime type of attachments to share is done here
             HashMap<String, Boolean> mimeTypes = new HashMap<>();
             for (Attachment attachment : note.getAttachmentsList()) {
+                Log.d("share", "Uri: " + FileProviderHelper.getShareableUri(attachment));
+                Log.d("share", "Mime: " + attachment.getMime_type());
                 uris.add(FileProviderHelper.getShareableUri(attachment));
                 mimeTypes.put(attachment.getMime_type(), true);
             }

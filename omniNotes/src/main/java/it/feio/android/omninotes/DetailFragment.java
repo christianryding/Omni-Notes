@@ -767,6 +767,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			}
 			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
 
+				// Log messages
+				Log.d("share", "MIMETYPE = " + attachment.getMime_type());
+				Log.d("share", "PATH = " + attachment.getUri().getPath());
+				Log.d("share", "URI = " + attachment.getUri().toString());
+
 				// if contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
 				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
@@ -775,14 +780,13 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 				Intent contactIntent = new Intent(Intent.ACTION_VIEW);
 				contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
+				cursor.close();
 
 				try {
 					getContext().startActivity(contactIntent);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				cursor.close();
-
 			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
