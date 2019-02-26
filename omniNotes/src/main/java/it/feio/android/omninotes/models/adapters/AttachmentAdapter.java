@@ -134,12 +134,12 @@ public class AttachmentAdapter extends BaseAdapter {
             holder.text.setVisibility(View.VISIBLE);
         }
 
-        // Set contacts name
+        // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
 
             String name = "";
             int id;
-            Bitmap bitmapImg;
+            Bitmap thumbnailBm;
 
             // Get contacts name
             Cursor cursor = convertView.getContext().getContentResolver().query(
@@ -153,32 +153,29 @@ public class AttachmentAdapter extends BaseAdapter {
                 id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
                 name = cursor.getString(id);
             }
+            cursor.close();
+            holder.text.setText(name);
+            holder.text.setVisibility(View.VISIBLE);
 
             // Get contacts photo
             InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
                     convertView.getContext().getContentResolver()
                     , mAttachment.getUri()
                     , true);
-            bitmapImg = BitmapFactory.decodeStream(s);
+            thumbnailBm = BitmapFactory.decodeStream(s);
+            
 
-
-            if (bitmapImg == null) {
+            // Load contacts thumbnail picture if available
+            if (thumbnailBm == null) {
                 Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
-                //BitmapDrawable drawableBitmap = ((BitmapDrawable) convertView.getContext().getResources().getDrawable());
-                //if (drawableBitmap != null) {
-                    //img = drawableBitmap.getBitmap();
-                //}
+                Glide.with(mActivity.getApplicationContext())
+                    .load(thumbnailUri)
+                    .into(holder.image);
+            }else {
+                Glide.with(mActivity.getApplicationContext())
+                        .load(thumbnailBm)
+                        .into(holder.image);
             }
-
-            holder.text.setText(name);
-            holder.text.setVisibility(View.VISIBLE);
-
-            Glide.with(mActivity.getApplicationContext())
-                .load(bitmapImg)
-//              .centerCrop()
-//              .crossFade()
-                .into(holder.image);
-
         }else{
             // Starts the AsyncTask to draw bitmap into ImageView
             Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
@@ -191,8 +188,6 @@ public class AttachmentAdapter extends BaseAdapter {
 
         }
 
-
-
         return convertView;
     }
 
@@ -200,24 +195,6 @@ public class AttachmentAdapter extends BaseAdapter {
 	public List<Attachment> getAttachmentsList() {
         return attachmentsList;
 	}
-
-
-    public Bitmap getContactPhoto(Context ctxt, Uri uri, boolean hiRes, Integer defaultResource) {
-        Bitmap img = null;
-        InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
-                ctxt.getContentResolver(), uri, hiRes);
-        img = BitmapFactory.decodeStream(s);
-
-        if (img == null && defaultResource != null) {
-            BitmapDrawable drawableBitmap = ((BitmapDrawable) ctxt.getResources().getDrawable(
-                    defaultResource));
-            if (drawableBitmap != null) {
-                img = drawableBitmap.getBitmap();
-            }
-        }
-        return img;
-    }
-
 
     public class AttachmentHolder {
 

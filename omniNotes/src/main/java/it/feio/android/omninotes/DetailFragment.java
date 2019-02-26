@@ -781,6 +781,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				cursor.close();
 
 			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
