@@ -19,8 +19,13 @@ package it.feio.android.omninotes.models.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +35,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -132,24 +139,59 @@ public class AttachmentAdapter extends BaseAdapter {
 
             String name = "";
             int id;
+            Bitmap bitmapImg;
 
-            Cursor cursor = convertView.getContext().getContentResolver().query(mAttachment.getUri(), null, null, null, null);
+            // Get contacts name
+            Cursor cursor = convertView.getContext().getContentResolver().query(
+                    mAttachment.getUri()
+                    , null
+                    , null
+                    , null
+                    , null);
+
             if (cursor.moveToFirst()) {
                 id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
                 name = cursor.getString(id);
             }
 
+            // Get contacts photo
+            InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
+                    convertView.getContext().getContentResolver()
+                    , mAttachment.getUri()
+                    , true);
+            bitmapImg = BitmapFactory.decodeStream(s);
+
+
+            if (bitmapImg == null) {
+                Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+                //BitmapDrawable drawableBitmap = ((BitmapDrawable) convertView.getContext().getResources().getDrawable());
+                //if (drawableBitmap != null) {
+                    //img = drawableBitmap.getBitmap();
+                //}
+            }
+
             holder.text.setText(name);
             holder.text.setVisibility(View.VISIBLE);
-        }
 
-        // Starts the AsyncTask to draw bitmap into ImageView
-        Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
-        Glide.with(mActivity.getApplicationContext())
+            Glide.with(mActivity.getApplicationContext())
+                .load(bitmapImg)
+//              .centerCrop()
+//              .crossFade()
+                .into(holder.image);
+
+        }else{
+            // Starts the AsyncTask to draw bitmap into ImageView
+            Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+            Glide.with(mActivity.getApplicationContext())
                 .load(thumbnailUri)
 //                .centerCrop()
 //                .crossFade()
                 .into(holder.image);
+
+
+        }
+
+
 
         return convertView;
     }
@@ -160,6 +202,21 @@ public class AttachmentAdapter extends BaseAdapter {
 	}
 
 
+    public Bitmap getContactPhoto(Context ctxt, Uri uri, boolean hiRes, Integer defaultResource) {
+        Bitmap img = null;
+        InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
+                ctxt.getContentResolver(), uri, hiRes);
+        img = BitmapFactory.decodeStream(s);
+
+        if (img == null && defaultResource != null) {
+            BitmapDrawable drawableBitmap = ((BitmapDrawable) ctxt.getResources().getDrawable(
+                    defaultResource));
+            if (drawableBitmap != null) {
+                img = drawableBitmap.getBitmap();
+            }
+        }
+        return img;
+    }
 
 
     public class AttachmentHolder {
