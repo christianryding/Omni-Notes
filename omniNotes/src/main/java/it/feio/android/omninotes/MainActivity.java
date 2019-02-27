@@ -17,18 +17,24 @@
 
 package it.feio.android.omninotes;
 
+import android.Manifest;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -40,6 +46,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,6 +63,7 @@ import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.helpers.NotesHelper;
+import it.feio.android.omninotes.helpers.PermissionsHelper;
 import it.feio.android.omninotes.intro.IntroActivity;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
@@ -481,15 +489,34 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             HashMap<String, Boolean> mimeTypes = new HashMap<>();
             for (Attachment attachment : note.getAttachmentsList()) {
                 Log.d("share", "Uri: " + FileProviderHelper.getShareableUri(attachment));
-                Log.d("share", "Mime: " + attachment.getMime_type());
+                //Log.d("share", "Mime: " + attachment.getMime_type());
                 Log.d("share", "Tostring: " + attachment.getUri().toString());
-                Log.d("share", "getUri: " + attachment.getUri());
+                Log.d("share", "getpath: " + attachment.getUri().getPath());
 
 
                 // Create picture with contacts information on it
                 if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
-                    //uris.add(FileProviderHelper.getShareableUri(attachment));
-                    //mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
+
+                    File file = null;
+                    try {
+                        file = new File(Environment.getExternalStorageDirectory().getPath() + "/test.txt");
+                    }catch (Exception e){}
+
+
+                    if( ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                            PackageManager.PERMISSION_GRANTED){
+                        Log.d("xxx", "permission exists");
+                    }else{
+                        Log.d("xxx", "permission dont exists");
+
+                    }
+
+                    if (file.exists()){ Log.d("xxx", "it exists");
+                    } else{ Log.d("xxx", "it doesnt exists " + file.getAbsolutePath()); }
+
+
+                    //uris.add(Uri.parse(file.toString()));
+                    //mimeTypes.put(Constants.MIME_TYPE_FILES, true);
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
@@ -510,6 +537,9 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
         startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.share_message_chooser)));
     }
+
+
+
 
 
     /**
