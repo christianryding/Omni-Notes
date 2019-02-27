@@ -84,6 +84,7 @@ public class StatsActivity extends Activity {
                 .getAudioRecordings()));
         ((TextView) findViewById(R.id.stat_attachments_sketches)).setText(String.valueOf(mStats.getSketches()));
         ((TextView) findViewById(R.id.stat_attachments_files)).setText(String.valueOf(mStats.getFiles()));
+        ((TextView) findViewById(R.id.stat_attachments_contacts)).setText(String.valueOf(mStats.getContacts()));
         ((TextView) findViewById(R.id.stat_locations)).setText(String.valueOf(mStats.getLocation()));
 
         ((TextView) findViewById(R.id.stat_words)).setText(String.valueOf(mStats.getWords()));

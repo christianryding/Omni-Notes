@@ -398,6 +398,29 @@
         </TableRow>
 
         <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="2dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:paddingEnd="7dp"
+                android:paddingRight="7dp"
+                android:text="@string/stats_files"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/stat_attachments_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </TextView>
+        </TableRow>
+
+        <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"

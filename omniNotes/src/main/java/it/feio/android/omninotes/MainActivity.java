@@ -66,6 +66,8 @@ import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
 
+import static android.net.Uri.parse;
+
 
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -480,8 +482,19 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             for (Attachment attachment : note.getAttachmentsList()) {
                 Log.d("share", "Uri: " + FileProviderHelper.getShareableUri(attachment));
                 Log.d("share", "Mime: " + attachment.getMime_type());
-                uris.add(FileProviderHelper.getShareableUri(attachment));
-                mimeTypes.put(attachment.getMime_type(), true);
+                Log.d("share", "Tostring: " + attachment.getUri().toString());
+                Log.d("share", "getUri: " + attachment.getUri());
+
+
+                // Create picture with contacts information on it
+                if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
+                    //uris.add(FileProviderHelper.getShareableUri(attachment));
+                    //mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
+                }
+                else{
+                    uris.add(FileProviderHelper.getShareableUri(attachment));
+                    mimeTypes.put(attachment.getMime_type(), true);
+                }
             }
             // If many mime types are present a general type is assigned to intent
             if (mimeTypes.size() > 1) {
