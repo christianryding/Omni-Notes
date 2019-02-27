@@ -223,6 +223,9 @@
     <string name="info">Info</string>
     <string name="completed">Completed</string>
     <string name="export">Export</string>
+    <string name="export_text">Text File</string>
+    <string name="export_html">HTML File</string>
+    <string name="export_pdf">PDF File</string>
 
     <!-- Settings -->
     <string name="dashclock_description">Displays some statistics and expiring reminders from Omni Notes</string>

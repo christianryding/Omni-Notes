@@ -218,6 +218,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private Uri attachmentUri;
 	private AttachmentAdapter mAttachmentAdapter;
 	private MaterialDialog attachmentDialog;
+	private MaterialDialog exportDialog = null;
 	private Note note;
 	private Note noteTmp;
 	private Note noteOriginal;
@@ -1096,7 +1097,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				addShortcut();
 				break;
 			case R.id.menu_export:
-				exportNote();
+				showExportPopup();
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -1502,6 +1503,43 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 	}
 
+	/**
+	 * Shows a dialog that lets the user select what format to export to. The not will then be exported
+	 * to the select format.
+	 */
+	private void showExportPopup() {
+		// Simply go back if is a new note
+		if (noteTmp.get_id() == null) {
+			goHome();
+			return;
+		}
+
+		LayoutInflater inflater = mainActivity.getLayoutInflater();
+		final View layout = inflater.inflate(R.layout.export_dialog, null);
+
+		exportDialog = new MaterialDialog.Builder(mainActivity)
+				.autoDismiss(false)
+				.customView(layout, false)
+				.build();
+		exportDialog.show();
+
+		// Text
+		final android.widget.TextView textText = layout.findViewById(R.id.export_text);
+		textText.setOnClickListener(v -> handleExportPopupResult(EXPORT_TEXT));
+		// Html
+		final android.widget.TextView htmlText = layout.findViewById(R.id.export_html);
+		htmlText.setOnClickListener(v -> handleExportPopupResult(EXPORT_HTML));
+		// Pdf
+		final android.widget.TextView pdfText = layout.findViewById(R.id.export_pdf);
+		pdfText.setOnClickListener(v -> handleExportPopupResult(EXPORT_PDF));
+	}
+
+
+	/**
+	 * Handles result from Intent.ACTION_CREATE_DOCUMENT started in exportNote().
+	 * @param intent
+	 * @param requestCode
+	 */
 	private void onActivityResultManageExportWrite(Intent intent, int requestCode) {
 		if (intent == null) {
 			Log.d(Constants.TAG, "Export: intent was null.");
@@ -1517,9 +1555,15 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		// Decide what export to use
 		Exporter exporter;
 		switch(requestCode) {
-			case EXPORT_TEXT: exporter = ExporterFactory.createTextExporter(); break;
-			case EXPORT_HTML: exporter = ExporterFactory.createTextExporter(); break;
-			case EXPORT_PDF: exporter = ExporterFactory.createTextExporter(); break;
+			case EXPORT_TEXT:
+				exporter = ExporterFactory.createTextExporter();
+				break;
+			case EXPORT_HTML:
+				exporter = ExporterFactory.createHtmlExporter();
+				break;
+			case EXPORT_PDF:
+				exporter = ExporterFactory.createPdfExporter();
+				break;
 			default:
 				Log.d(Constants.TAG, "Export: Wrong export request code.");
 				return;
@@ -1542,32 +1586,47 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		new SaveNoteTask(onNoteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteOriginal);
 	}
 
+	/**
+	 * Handles selection done at the export popup dialog.
+	 * @param exportType One of: EXPORT_TEXT, EXPORT_PDF or EXPORT_HTML
+	 */
 	@SuppressLint("NewApi")
-	private void exportNote() {
-		// Simply go back if is a new note
-		if (noteTmp.get_id() == null) {
-			goHome();
-			return;
+	private void handleExportPopupResult(int exportType) {
+		String extension;
+		String mime;
+
+		switch (exportType) {
+			case EXPORT_TEXT:
+				extension = ".txt";
+				mime = "text/plain";
+				break;
+			case EXPORT_PDF:
+				extension = ".pdf";
+				mime = "application/pdf";
+				break;
+			case EXPORT_HTML:
+				extension = ".html";
+				mime = "text/html";
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid export format");
 		}
 
-		// TODO: Show a dialog to let the user select file type
-		/*
-		EXPORT_TEXT
-		EXPORT_PDF
-		EXPORT_HTML
-		*/
-
+		// Construct a file name
 		String fileName = getNoteTitle();
 		if (fileName.isEmpty()) {
 			fileName = "untitled";
 		}
-		fileName += ".txt";
+		fileName += extension;
 
+		// Intent for selecting a file
 		Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		intent.setType("text/plain");
+		intent.setType(mime);
 		intent.putExtra(Intent.EXTRA_TITLE, fileName);
-		startActivityForResult(intent, EXPORT_TEXT);
+		startActivityForResult(intent, exportType);
+
+		exportDialog.dismiss();
 	}
 
 	@SuppressLint("NewApi")
