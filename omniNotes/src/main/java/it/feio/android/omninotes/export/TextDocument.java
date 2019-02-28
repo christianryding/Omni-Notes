@@ -45,8 +45,14 @@ public class TextDocument extends Document {
 
     @Override
     protected void content(String noteTitle, String category, String color) {
-        appendTitle(noteTitle + " (" + category + ")");
+        if (category.isEmpty()) {
+            appendTitle(noteTitle);
+        } else {
+            appendTitle(noteTitle + " (" + category + ")");
+        }
+
         super.content(noteTitle, category, color);
+
         sb.append(NEWLINE);
     }
 

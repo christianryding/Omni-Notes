@@ -1,21 +1,27 @@
 package it.feio.android.omninotes.export;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.OutputStream;
 
 import it.feio.android.checklistview.interfaces.Constants;
+import it.feio.android.omninotes.OmniNotes;
+import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.helpers.date.DateHelper;
+import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 
 import static java.lang.Long.parseLong;
 
 public abstract class Document implements Exporter {
     private Note note;
+    private Context context;
 
     final public void export(Note note, OutputStream os) {
         this.note = note;
+        this.context = OmniNotes.getAppContext();
 
         begin();
         document();
@@ -23,13 +29,33 @@ public abstract class Document implements Exporter {
     }
 
     protected void document() {
-        content(note.getTitle(), note.getCategory().toString(), note.getCategory().getColor());
+        // Export content
+        String catName = "";
+        String catColor = "";
+        Category category = note.getCategory();
+        if (category != null) {
+            catName = category.getName();
+            catColor = category.getColor();
+        }
+        content(note.getTitle(), catName, catColor);
 
-        attachments("Attachments");
+        // Export attachments
+        attachments(getString(R.string.attachments_title));
 
-        timestamp(formatTimeStamp(note.getLastModification(), note.getCreation()));
+        // Export creation and modification time
+        final Long lastMod = note.getLastModification();
+        final Long creation = note.getCreation();
+        if (lastMod != null && creation != null) {
+            timestamp(formatTimeStamp(lastMod, creation));
+        }
     }
 
+    /**
+     * Handles exporting of note content.
+     * @param noteTitle Note title.
+     * @param category Category name. Empty string if no category is set.
+     * @param color Category color. Empty string if no category is set.
+     */
     protected void content(String noteTitle, String category, String color) {
         if (note.isChecklist()) {
             checklistContent();
@@ -45,9 +71,9 @@ public abstract class Document implements Exporter {
     }
 
     protected void contact() {
-        contactName("Name", "First", "Person");
-        contactPhone("Phonenumber", "123-123456");
-        contactEmail("Email address", "email@address.com");
+        contactName(getString(R.string.name_label), "First", "Person");
+        contactPhone(getString(R.string.phonenumber_label), "123-123456");
+        contactEmail(getString(R.string.email_label), "email@address.com");
     }
 
     protected void checklistContent() {
@@ -68,15 +94,15 @@ public abstract class Document implements Exporter {
     protected void attachments(String attachmentsTitle) {
         final String address = note.getAddress();
         if (address != null && !address.isEmpty()) {
-            location("Location", address);
+            location(context.getString(R.string.location), address);
         }
 
         final String reminder = getReminderText();
         if (!reminder.isEmpty()) {
-            reminder("Reminder", reminder);
+            reminder(getString(R.string.reminder_label), reminder);
         }
 
-        contacts("Contacts");
+        contacts(getString(R.string.contacts_label));
     }
 
     abstract protected void begin();
@@ -93,9 +119,14 @@ public abstract class Document implements Exporter {
 
 
     private String formatTimeStamp(long modified, long created) {
-        final String modifiedStr = DateHelper.getFormattedDate(modified, false);
-        final String createdStr =  DateHelper.getFormattedDate(created, false);
-        return "Last modified " + modifiedStr + " (Created " + createdStr + ")";
+        return getString(R.string.last_update)
+                + " "
+                + DateHelper.getFormattedDate(modified, false)
+                + " ("
+                + getString(R.string.creation)
+                + " "
+                + DateHelper.getFormattedDate(created, false)
+                + ")";
     }
 
 
@@ -115,5 +146,9 @@ public abstract class Document implements Exporter {
         } else {
             return DateHelper.getNoteReminderText(reminder);
         }
+    }
+
+    private String getString(int id) {
+        return context.getString(id);
     }
 }
