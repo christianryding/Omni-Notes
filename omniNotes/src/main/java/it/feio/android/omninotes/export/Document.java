@@ -1,5 +1,6 @@
 package it.feio.android.omninotes.export;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.OutputStream;
@@ -8,16 +9,13 @@ import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.omninotes.helpers.date.DateHelper;
 import it.feio.android.omninotes.models.Note;
 
-/**
- * TODO: Replace placeholder texts with info from the note.
- */
+import static java.lang.Long.parseLong;
+
 public abstract class Document implements Exporter {
     private Note note;
-    private OutputStream os;
 
     final public void export(Note note, OutputStream os) {
         this.note = note;
-        this.os = os;
 
         begin();
         document();
@@ -41,6 +39,7 @@ public abstract class Document implements Exporter {
     }
 
     protected void contacts(String contactsLabel) {
+        // TODO: Get information from attached contacts and replace the placeholder text in contact()
         contact();
         contact();
     }
@@ -67,8 +66,16 @@ public abstract class Document implements Exporter {
     }
 
     protected void attachments(String attachmentsTitle) {
-        location("Location", "1600 Amphitheatre Pkwy, Montaina View, CA 94043, USA");
-        reminder("Reminder", "Weekley on Thuesday Starting from Wed, Feb 7 8:00 PM");
+        final String address = note.getAddress();
+        if (address != null && !address.isEmpty()) {
+            location("Location", address);
+        }
+
+        final String reminder = getReminderText();
+        if (!reminder.isEmpty()) {
+            reminder("Reminder", reminder);
+        }
+
         contacts("Contacts");
     }
 
@@ -89,5 +96,24 @@ public abstract class Document implements Exporter {
         final String modifiedStr = DateHelper.getFormattedDate(modified, false);
         final String createdStr =  DateHelper.getFormattedDate(created, false);
         return "Last modified " + modifiedStr + " (Created " + createdStr + ")";
+    }
+
+
+    /**
+     * Returns the reminder time string used when exporting the note.
+     *
+     * TODO: Reduce code duplication. This method is a copy of DetailFragment.initReminder.
+     */
+    private String getReminderText() {
+        if (note.getAlarm() == null) {
+            return "";
+        }
+        long reminder = parseLong(note.getAlarm());
+        String rrule = note.getRecurrenceRule();
+        if (!TextUtils.isEmpty(rrule)) {
+            return DateHelper.getNoteRecurrentReminderText(reminder, rrule);
+        } else {
+            return DateHelper.getNoteReminderText(reminder);
+        }
     }
 }
