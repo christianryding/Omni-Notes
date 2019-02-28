@@ -92,7 +92,7 @@ public class TextDocument extends Document {
     @Override
     protected void checklistItem(String text, boolean isChecked) {
         final char checkedChar = isChecked ? 'X' : ' ';
-        sb.append(" - [").append(checkedChar).append("] ").append("text").append(NEWLINE);
+        sb.append(" - [").append(checkedChar).append("] ").append(text).append(NEWLINE);
     }
 
     @Override

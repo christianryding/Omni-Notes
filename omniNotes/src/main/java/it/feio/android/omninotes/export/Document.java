@@ -2,9 +2,10 @@ package it.feio.android.omninotes.export;
 
 import android.util.Log;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
+import it.feio.android.checklistview.interfaces.Constants;
+import it.feio.android.omninotes.helpers.date.DateHelper;
 import it.feio.android.omninotes.models.Note;
 
 /**
@@ -25,10 +26,10 @@ public abstract class Document implements Exporter {
 
     protected void document() {
         content(note.getTitle(), note.getCategory().toString(), note.getCategory().getColor());
+
         attachments("Attachments");
 
-        // TODO: Build from note timestamps
-        timestamp("Last modified 2019-02-19 (Created 2019-02-10)");
+        timestamp(formatTimeStamp(note.getLastModification(), note.getCreation()));
     }
 
     protected void content(String noteTitle, String category, String color) {
@@ -51,9 +52,18 @@ public abstract class Document implements Exporter {
     }
 
     protected void checklistContent() {
-        // TODO: Find out how the checklist is implemented
-        checklistItem("Checklist not implemented", true);
-        checklistItem("Implement check list", false);
+        final String lines[] = note.getContent().split("\n");
+        for (String line : lines) {
+            if (line.startsWith(Constants.CHECKED_SYM)) {
+                final String text = line.substring(Constants.CHECKED_SYM.length());
+                checklistItem(text, true);
+            } else if (line.startsWith(Constants.UNCHECKED_SYM)) {
+                final String text = line.substring(Constants.UNCHECKED_SYM.length());
+                checklistItem(text, false);
+            } else {
+                Log.w(Constants.TAG, "Checklist item wasn't prefixed with CHECKED_SYM or UNCHECKED_SYM.");
+            }
+        }
     }
 
     protected void attachments(String attachmentsTitle) {
@@ -73,4 +83,11 @@ public abstract class Document implements Exporter {
     abstract protected void contactPhone(String phoneLabel, String phone);
     abstract protected void contactEmail(String emailLabel, String email);
     abstract protected void timestamp(String timestamp);
+
+
+    private String formatTimeStamp(long modified, long created) {
+        final String modifiedStr = DateHelper.getFormattedDate(modified, false);
+        final String createdStr =  DateHelper.getFormattedDate(created, false);
+        return "Last modified " + modifiedStr + " (Created " + createdStr + ")";
+    }
 }

@@ -1579,7 +1579,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		};
 
 		final OnNoteSaved onNoteSaved = note ->
-				new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
+			new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 
 		// Start by first saving the note, seems most logical. After that the note will be exported.
 		new SaveNoteTask(onNoteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteTmp);
