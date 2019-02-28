@@ -231,7 +231,9 @@
     <string name="contacts_label">Contacts</string>
     <string name="name_label">Name</string>
     <string name="phonenumber_label">Phonenumber</string>
-    <string name="email_label">"Email address</string>
+    <string name="email_label">Email address</string>
+    <string name="note_exported">Note exported</string>
+    <string name="note_not_exported">"Couldn't export note!</string>
 
 
     <!-- Settings -->

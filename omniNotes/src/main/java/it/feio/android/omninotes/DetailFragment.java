@@ -1575,11 +1575,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		}
 
 		final OnNoteExported onNoteExported = exportedOk -> {
-			// TODO: Add strings for messages
 			if (exportedOk) {
-				mainActivity.showToast("Note exported", Toast.LENGTH_LONG);
+				mainActivity.showToast(getString(R.string.note_exported), Toast.LENGTH_LONG);
 			} else {
-				mainActivity.showToast("Couldn't export note!", Toast.LENGTH_LONG);
+				mainActivity.showToast(getString(R.string.note_not_exported), Toast.LENGTH_LONG);
 			}
 		};
 
