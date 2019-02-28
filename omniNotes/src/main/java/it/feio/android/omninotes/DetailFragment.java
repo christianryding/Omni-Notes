@@ -1022,10 +1022,16 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			// Otherwise all other actions will be available
 		} else {
 			menu.findItem(R.id.menu_add_shortcut).setVisible(!newNote);
-			menu.findItem(R.id.menu_export).setVisible(!newNote);
 			menu.findItem(R.id.menu_archive).setVisible(!newNote && !noteTmp.isArchived());
 			menu.findItem(R.id.menu_unarchive).setVisible(!newNote && noteTmp.isArchived());
 			menu.findItem(R.id.menu_trash).setVisible(!newNote);
+		}
+
+		// Only show export if the note actually contains something to export.
+		if (isNoteEmpty()) {
+			menu.findItem(R.id.menu_export).setVisible(false);
+		} else {
+			menu.findItem(R.id.menu_export).setVisible(true);
 		}
 	}
 
@@ -1508,9 +1514,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	 * to the select format.
 	 */
 	private void showExportPopup() {
-		// Simply go back if is a new note
-		if (noteTmp.get_id() == null) {
-			goHome();
+		// Don't export an empty note
+		if (isNoteEmpty()) {
 			return;
 		}
 
@@ -1581,8 +1586,13 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		final OnNoteSaved onNoteSaved = note ->
 			new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 
-		// Start by first saving the note, seems most logical. After that the note will be exported.
-		new SaveNoteTask(onNoteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, noteTmp);
+		if (saveNotNeeded()) {
+			// Nothing is changed so export without saving
+			onNoteSaved.onNoteSaved(noteOriginal);
+		} else {
+			// Save the note first, then continue with the export.
+			performSaveNote(onNoteSaved);
+		 }
 	}
 
 	/**
@@ -1692,14 +1702,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	 * Save new notes, modify them or archive
 	 */
 	void saveNote(OnNoteSaved mOnNoteSaved) {
-
-		// Changed fields
-		noteTmp.setTitle(getNoteTitle());
-		noteTmp.setContent(getNoteContent());
-
 		// Check if some text or attachments of any type have been inserted or is an empty note
-		if (goBack && TextUtils.isEmpty(noteTmp.getTitle()) && TextUtils.isEmpty(noteTmp.getContent())
-				&& noteTmp.getAttachmentsList().size() == 0) {
+		if (goBack && isNoteEmpty()) {
 			Log.d(Constants.TAG, "Empty note not saved");
 			exitMessage = getString(R.string.empty_note_not_saved);
 			exitCroutonStyle = ONStyle.INFO;
@@ -1715,10 +1719,26 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			return;
 		}
 
+		performSaveNote(mOnNoteSaved);
+	}
+
+	private void performSaveNote(OnNoteSaved mOnNoteSaved) {
+		// Changed fields
+		noteTmp.setTitle(getNoteTitle());
+		noteTmp.setContent(getNoteContent());
 		noteTmp.setAttachmentsListOld(note.getAttachmentsList());
 
 		new SaveNoteTask(mOnNoteSaved, lastModificationUpdatedNeeded()).executeOnExecutor(AsyncTask
 				.THREAD_POOL_EXECUTOR, noteTmp);
+	}
+
+	/**
+	 * @return true if note is empty, otherwise false.
+	 */
+	private boolean isNoteEmpty() {
+		return TextUtils.isEmpty(getNoteTitle())
+				&& TextUtils.isEmpty(getNoteContent())
+				&& noteTmp.getAttachmentsList().size() == 0;
 	}
 
 	/**
