@@ -159,9 +159,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		OnAttachingFileListener, TextWatcher, CheckListChangedListener, OnNoteSaved,
 		OnGeoUtilResultListener {
 
-	private static final int PICK_CONTACT = 8;
-	private static final int PERMISSION_REQUEST_CONTACTS = 100;
-
 	private static final int TAKE_PHOTO = 1;
 	private static final int TAKE_VIDEO = 2;
 	private static final int SET_PASSWORD = 3;
@@ -169,6 +166,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int CATEGORY = 5;
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
+	private static final int PICK_CONTACT = 8;
 	private static final int RC_READ_EXTERNAL_STORAGE_PERMISSION = 1;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
@@ -749,9 +747,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
 			Uri uri = attachment.getUri();
 			Intent attachmentIntent;
-			Log.d("TEST", "MIMETYPE is: " + attachment.getMime_type());
-			if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
 
+			if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
 				attachmentIntent = new Intent(Intent.ACTION_VIEW);
 				attachmentIntent.setDataAndType(uri, StorageHelper.getMimeType(mainActivity,
 						FileProviderHelper.getShareableUri(attachment)));
@@ -765,12 +762,17 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
-			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
+			//else if (Constants.MIME_TYPE_CONTACT_EXT.equals(attachment.getMime_type()) ) {
+
+
+			//	Log.d("XXX", "WOOOOOW");
+			//}
+			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) ) {
 
 				// Log messages
-				Log.d("share", "MIMETYPE = " + attachment.getMime_type());
-				Log.d("share", "PATH = " + attachment.getUri().getPath());
-				Log.d("share", "URI = " + attachment.getUri().toString());
+				Log.d("xxx", "MIMETYPE = " + attachment.getMime_type());
+				Log.d("xxx", "PATH = " + attachment.getUri().getPath());
+				Log.d("xxx", "URI = " + attachment.getUri().toString());
 
 				// if contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();

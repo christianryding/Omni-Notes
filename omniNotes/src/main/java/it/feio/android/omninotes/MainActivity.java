@@ -17,24 +17,21 @@
 
 package it.feio.android.omninotes;
 
-import android.Manifest;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -47,6 +44,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -63,7 +62,6 @@ import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.helpers.NotesHelper;
-import it.feio.android.omninotes.helpers.PermissionsHelper;
 import it.feio.android.omninotes.intro.IntroActivity;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
@@ -73,8 +71,6 @@ import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
-
-import static android.net.Uri.parse;
 
 
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -476,6 +472,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
             // Intent with single image attachment
         } else if (note.getAttachmentsList().size() == 1) {
+            Log.d("sharexxx", "testing one");
+
             shareIntent.setAction(Intent.ACTION_SEND);
             Attachment attachment = note.getAttachmentsList().get(0);
             shareIntent.setType(attachment.getMime_type());
@@ -488,38 +486,41 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             // A check to decide the mime type of attachments to share is done here
             HashMap<String, Boolean> mimeTypes = new HashMap<>();
             for (Attachment attachment : note.getAttachmentsList()) {
-                Log.d("share", "Uri: " + FileProviderHelper.getShareableUri(attachment));
-                //Log.d("share", "Mime: " + attachment.getMime_type());
-                Log.d("share", "Tostring: " + attachment.getUri().toString());
-                Log.d("share", "getpath: " + attachment.getUri().getPath());
 
-
-                // Create picture with contacts information on it
+                // Export contact attachments to vcf format
                 if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
 
-                    File file = null;
+                    // Get contact information
+                    // ---
+                    Cursor cursor = getApplicationContext().getContentResolver().query(attachment.getUri(), null, null, null, null);
+                    cursor.moveToFirst();
+                    String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                    Uri vcarduri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+                    Log.d("VCARD", "VCARD: " + vcarduri.toString());
+                    cursor.close();
+
+
+                    // Write vCard to file
+                    File vcfFile = null;
                     try {
-                        file = new File(Environment.getExternalStorageDirectory().getPath() + "/test.txt");
-                    }catch (Exception e){}
-
-
-                    if( ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                            PackageManager.PERMISSION_GRANTED){
-                        Log.d("xxx", "permission exists");
-                    }else{
-                        Log.d("xxx", "permission dont exists");
+                        vcfFile = new File(this.getExternalFilesDir(null) + "_contact_" + "_" + System.currentTimeMillis() + ".vcf");
+                        FileWriter fw = new FileWriter(vcfFile);
+                        fw.write("BEGIN:VCARD\r\n");
+                        fw.write("VERSION:3.0\r\n");
+                        fw.write("FN:" + "christianTEST\r\n");
+                        fw.write("END:VCARD\r\n");
+                        fw.close();
+                    }catch(Exception e){
 
                     }
 
-                    if (file.exists()){ Log.d("xxx", "it exists");
-                    } else{ Log.d("xxx", "it doesnt exists " + file.getAbsolutePath()); }
 
-
-                    //uris.add(Uri.parse(file.toString()));
-                    //mimeTypes.put(Constants.MIME_TYPE_FILES, true);
+                    uris.add(FileProviderHelper.getFileProvider(vcfFile));
+                    mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
+                    Log.d("sharex", FileProviderHelper.getShareableUri(attachment).toString());
                     mimeTypes.put(attachment.getMime_type(), true);
                 }
             }

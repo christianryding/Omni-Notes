@@ -108,12 +108,13 @@ public interface ConstantsBase {
 	String MIME_TYPE_SKETCH = "image/png";
 	String MIME_TYPE_FILES = "file/*";
 	String MIME_TYPE_CONTACT = "text/uri-list";
+	String MIME_TYPE_CONTACT_EXT = ".vcf";
+
 
 	String MIME_TYPE_IMAGE_EXT = ".jpeg";
 	String MIME_TYPE_AUDIO_EXT = ".amr";
 	String MIME_TYPE_VIDEO_EXT = ".mp4";
 	String MIME_TYPE_SKETCH_EXT = ".png";
-	String MIME_TYPE_CONTACT_EXT = ".vcf";
 
 	String TIMESTAMP_UNIX_EPOCH = "0";
 	String TIMESTAMP_UNIX_EPOCH_FAR = "18464193800000";

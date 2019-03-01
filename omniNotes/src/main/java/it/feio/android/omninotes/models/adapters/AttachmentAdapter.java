@@ -21,11 +21,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +32,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +45,6 @@ import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
 import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.date.DateUtils;
-
 
 public class AttachmentAdapter extends BaseAdapter {
 
@@ -138,7 +132,7 @@ public class AttachmentAdapter extends BaseAdapter {
         // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
 
-            String name = "";
+            String name = "test";
             int id;
             Bitmap thumbnailBm = null;
 
