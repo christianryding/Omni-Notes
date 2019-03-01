@@ -51,6 +51,8 @@ public class TextDocument extends Document {
             appendTitle(noteTitle + " (" + category + ")");
         }
 
+        sb.append(NEWLINE);
+
         super.content(noteTitle, category, color);
 
         sb.append(NEWLINE);
