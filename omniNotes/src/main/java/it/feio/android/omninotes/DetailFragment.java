@@ -1744,6 +1744,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	 * Checks if nothing is changed to avoid committing if possible (check)
 	 */
 	private boolean saveNotNeeded() {
+		// Changed fields
+		noteTmp.setTitle(getNoteTitle());
+		noteTmp.setContent(getNoteContent());
+
 		if (noteTmp.get_id() == null && prefs.getBoolean(Constants.PREF_AUTO_LOCATION, false)) {
 			note.setLatitude(noteTmp.getLatitude());
 			note.setLongitude(noteTmp.getLongitude());
