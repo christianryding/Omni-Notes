@@ -496,7 +496,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                     cursor.moveToFirst();
                     String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                     Uri vcarduri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
-                    Log.d("VCARD", "VCARD: " + vcarduri.toString());
+                    Log.d("VCARD", "VCARD: " + vcarduri);
                     cursor.close();
 
 
