@@ -589,7 +589,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                         Log.e(Constants.TAG_VCARD, "Could not write to vCard file");
                     }
                     uris.add(FileProviderHelper.getFileProvider(vcfFile));
-                    mimeTypes.put(Constants.MIME_TYPE_FILES, true);
+                    mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
