@@ -493,13 +493,13 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
 
                     // Get contact information
-                    Cursor cursor = getContentResolver().query(attachment.getUri(), null, null, null, null);
-                    cursor.moveToFirst();
-                    String contactID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                    String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                    Cursor contactCursor = getContentResolver().query(attachment.getUri(), null, null, null, null);
+                    contactCursor.moveToFirst();
+                    String contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    String lookupKey = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 
                     // Get name
-                    String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                     Log.d("SSS", "Lookup Key: " + lookupKey);
                     Log.d("SSS", "Contact ID: " + contactID);
                     Log.d("SSS", "Display: " + displayName);
@@ -507,7 +507,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                     List<String> phoneNrs = new ArrayList<>();
                     List<String> phoneTypes = new ArrayList<>();
                     // Get phone number/s
-                    if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("1")) {
+                    if(contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("1")) {
 
                         Cursor phoneCursor = getContentResolver().query(
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI
@@ -536,12 +536,41 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                             }
                         }
                         phoneCursor.close();
-
                     }
 
+                    List<String> mailAddresses = new ArrayList<>();
+                    List<String> mailTypes = new ArrayList<>();
+                    // Get emailaddress
+                    Cursor mailCursor = getContentResolver().query(
+                            ContactsContract.CommonDataKinds.Email.CONTENT_URI
+                            ,null
+                            ,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?"
+                            , new String[]{contactID}
+                            ,null);
+
+                    while (mailCursor.moveToNext()) {
+                        String email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                        int type = mailCursor.getInt(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
+
+                        if(email!=null){
+                            mailAddresses.add(email);
+                            switch (type) {
+                                case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+                                    mailTypes.add("home");
+                                    break;
+                                case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+                                    mailTypes.add("work");
+                                    break;
+                                default:
+                                    mailTypes.add("other");
+                                    break;
+                            }
+                        }
+                    }
+                    mailCursor.close();
 
 
-                    cursor.close();
+                    contactCursor.close();
 
 
 
@@ -557,6 +586,9 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                         fw.write("FN:" + displayName + "\r\n");
                         for(int i = 0; i < phoneNrs.size(); i++){
                             fw.write("TEL;TYPE=" + phoneTypes.get(i) + ",VOICE:" + phoneNrs.get(i) + "\r\n");
+                        }
+                        for(int j = 0; j < mailAddresses.size(); j++){
+                            fw.write("EMAIL;TYPE=" + mailTypes.get(j) + ":" + mailAddresses.get(j) + "\r\n");
                         }
                         fw.write("END:VCARD\r\n");
                         fw.close();
