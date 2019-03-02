@@ -120,6 +120,7 @@ public interface ConstantsBase {
 	String TIMESTAMP_UNIX_EPOCH_FAR = "18464193800000";
 
 	String TAG_SPECIAL_CHARS_TO_REMOVE = "[<>\\[\\],-\\.\\(\\)\\[\\]\\{\\}\\!\\?]";
+	String TAG_VCARD = "VCARD";
 
 	int MENU_SORT_GROUP_ID = 11998811;
 

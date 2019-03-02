@@ -496,13 +496,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                     Cursor contactCursor = getContentResolver().query(attachment.getUri(), null, null, null, null);
                     contactCursor.moveToFirst();
                     String contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
-                    String lookupKey = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                    //String lookupKey = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 
                     // Get name
                     String displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                    Log.d("SSS", "Lookup Key: " + lookupKey);
-                    Log.d("SSS", "Contact ID: " + contactID);
-                    Log.d("SSS", "Display: " + displayName);
+
 
                     List<String> phoneNrs = new ArrayList<>();
                     List<String> phoneTypes = new ArrayList<>();
@@ -568,18 +566,12 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                         }
                     }
                     mailCursor.close();
-
-
                     contactCursor.close();
-
-
-
-
 
                     // Write vCard to file
                     File vcfFile = null;
                     try {
-                        vcfFile = new File(this.getExternalFilesDir(null) + displayName + "_" + contactID + ".vcf");
+                        vcfFile = new File(getExternalFilesDir(null) + displayName + "_" + contactID + ".vcf");
                         FileWriter fw = new FileWriter(vcfFile);
                         fw.write("BEGIN:VCARD\r\n");
                         fw.write("VERSION:3.0\r\n");
@@ -593,10 +585,8 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                         fw.write("END:VCARD\r\n");
                         fw.close();
                     }catch(Exception e){
-
+                        Log.e(Constants.TAG_VCARD, "Could not write to vCard file");
                     }
-
-
                     uris.add(FileProviderHelper.getFileProvider(vcfFile));
                     mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
                 }

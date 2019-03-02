@@ -754,6 +754,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 						FileProviderHelper.getShareableUri(attachment)));
 				attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent
 						.FLAG_GRANT_WRITE_URI_PERMISSION);
+
 				if (IntentChecker.isAvailable(mainActivity.getApplicationContext(), attachmentIntent, null)) {
 					startActivity(attachmentIntent);
 				} else {
@@ -762,12 +763,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
-			// import vCards
-			//else if (Constants.MIME_TYPE_CONTACT_EXT.equals(attachment.getMime_type()) ) {
-			// TODO
-
-			//	Log.d("XXX", "WOOOOOW");
-			//}
 			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) ) {
 				// When contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
