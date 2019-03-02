@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -571,7 +572,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                     // Write vCard to file
                     File vcfFile = null;
                     try {
-                        vcfFile = new File(getExternalFilesDir(null) + displayName + "_" + contactID + ".vcf");
+                        vcfFile = new File(getExternalFilesDir(null) + "/" + displayName + "_" + contactID + ".vcf");
                         FileWriter fw = new FileWriter(vcfFile);
                         fw.write("BEGIN:VCARD\r\n");
                         fw.write("VERSION:3.0\r\n");
@@ -588,7 +589,7 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                         Log.e(Constants.TAG_VCARD, "Could not write to vCard file");
                     }
                     uris.add(FileProviderHelper.getFileProvider(vcfFile));
-                    mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
+                    mimeTypes.put(Constants.MIME_TYPE_FILES, true);
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
