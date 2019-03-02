@@ -19,6 +19,7 @@ package it.feio.android.omninotes;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -48,6 +49,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -491,23 +493,71 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
 
                     // Get contact information
-                    // ---
-                    Cursor cursor = getApplicationContext().getContentResolver().query(attachment.getUri(), null, null, null, null);
+                    Cursor cursor = getContentResolver().query(attachment.getUri(), null, null, null, null);
                     cursor.moveToFirst();
+                    String contactID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                     String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                    Uri vcarduri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
-                    Log.d("VCARD", "VCARD: " + vcarduri);
+
+                    // Get name
+                    String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    Log.d("SSS", "Lookup Key: " + lookupKey);
+                    Log.d("SSS", "Contact ID: " + contactID);
+                    Log.d("SSS", "Display: " + displayName);
+
+                    List<String> phoneNrs = new ArrayList<>();
+                    List<String> phoneTypes = new ArrayList<>();
+                    // Get phone number/s
+                    if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("1")) {
+
+                        Cursor phoneCursor = getContentResolver().query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                                , null
+                                , ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
+                                , new String[]{contactID}
+                                , null);
+
+                        while (phoneCursor.moveToNext()) {
+                            phoneNrs.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                            int type = phoneCursor.getInt(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+
+                            switch (type) {
+                                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                                    phoneTypes.add("home");
+                                    break;
+                                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                                    phoneTypes.add("cell");
+                                    break;
+                                case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                                    phoneTypes.add("work");
+                                    break;
+                                default:
+                                    phoneTypes.add("other");
+                                    break;
+                            }
+                        }
+                        phoneCursor.close();
+
+                    }
+
+
+
                     cursor.close();
+
+
+
 
 
                     // Write vCard to file
                     File vcfFile = null;
                     try {
-                        vcfFile = new File(this.getExternalFilesDir(null) + "_contact_" + "_" + System.currentTimeMillis() + ".vcf");
+                        vcfFile = new File(this.getExternalFilesDir(null) + displayName + "_" + contactID + ".vcf");
                         FileWriter fw = new FileWriter(vcfFile);
                         fw.write("BEGIN:VCARD\r\n");
                         fw.write("VERSION:3.0\r\n");
-                        fw.write("FN:" + "christianTEST\r\n");
+                        fw.write("FN:" + displayName + "\r\n");
+                        for(int i = 0; i < phoneNrs.size(); i++){
+                            fw.write("TEL;TYPE=" + phoneTypes.get(i) + ",VOICE:" + phoneNrs.get(i) + "\r\n");
+                        }
                         fw.write("END:VCARD\r\n");
                         fw.close();
                     }catch(Exception e){
@@ -520,7 +570,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
-                    Log.d("sharex", FileProviderHelper.getShareableUri(attachment).toString());
                     mimeTypes.put(attachment.getMime_type(), true);
                 }
             }

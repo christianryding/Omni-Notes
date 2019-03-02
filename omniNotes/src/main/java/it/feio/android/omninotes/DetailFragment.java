@@ -762,19 +762,14 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
+			// import vCards
 			//else if (Constants.MIME_TYPE_CONTACT_EXT.equals(attachment.getMime_type()) ) {
-
+			// TODO
 
 			//	Log.d("XXX", "WOOOOOW");
 			//}
 			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) ) {
-
-				// Log messages
-				Log.d("xxx", "MIMETYPE = " + attachment.getMime_type());
-				Log.d("xxx", "PATH = " + attachment.getUri().getPath());
-				Log.d("xxx", "URI = " + attachment.getUri().toString());
-
-				// if contact attachment is clicked, open contact information
+				// When contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
 				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
 				cursor.moveToFirst();
