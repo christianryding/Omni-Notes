@@ -71,6 +71,7 @@ import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.ContactHelper;
 import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
@@ -475,8 +476,6 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
 
             // Intent with single image attachment
         } else if (note.getAttachmentsList().size() == 1) {
-            Log.d("sharexxx", "testing one");
-
             shareIntent.setAction(Intent.ACTION_SEND);
             Attachment attachment = note.getAttachmentsList().get(0);
             shareIntent.setType(attachment.getMime_type());
@@ -493,94 +492,26 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                 // Export contact attachments to vcf format
                 if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
 
-                    // Get contact information
-                    Cursor contactCursor = getContentResolver().query(attachment.getUri(), null, null, null, null);
-                    contactCursor.moveToFirst();
-                    String contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
-
-                    // Get name
-                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-
-
-                    List<String> phoneNrs = new ArrayList<>();
-                    List<String> phoneTypes = new ArrayList<>();
-                    // Get phone number/s
-                    if(contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("1")) {
-
-                        Cursor phoneCursor = getContentResolver().query(
-                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-                                , null
-                                , ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
-                                , new String[]{contactID}
-                                , null);
-
-                        while (phoneCursor.moveToNext()) {
-                            phoneNrs.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                            int type = phoneCursor.getInt(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-
-                            switch (type) {
-                                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                                    phoneTypes.add("home");
-                                    break;
-                                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                                    phoneTypes.add("cell");
-                                    break;
-                                case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                                    phoneTypes.add("work");
-                                    break;
-                                default:
-                                    phoneTypes.add("other");
-                                    break;
-                            }
-                        }
-                        phoneCursor.close();
-                    }
-
-                    List<String> mailAddresses = new ArrayList<>();
-                    List<String> mailTypes = new ArrayList<>();
-                    // Get emailaddress
-                    Cursor mailCursor = getContentResolver().query(
-                            ContactsContract.CommonDataKinds.Email.CONTENT_URI
-                            ,null
-                            ,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?"
-                            , new String[]{contactID}
-                            ,null);
-
-                    while (mailCursor.moveToNext()) {
-                        String email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                        int type = mailCursor.getInt(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
-
-                        if(email!=null){
-                            mailAddresses.add(email);
-                            switch (type) {
-                                case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
-                                    mailTypes.add("home");
-                                    break;
-                                case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
-                                    mailTypes.add("work");
-                                    break;
-                                default:
-                                    mailTypes.add("other");
-                                    break;
-                            }
-                        }
-                    }
-                    mailCursor.close();
-                    contactCursor.close();
+                    // ContactHelper gets name, phone numbers and email addresses for specific contact
+                    ContactHelper contactHelper = new ContactHelper(attachment, getApplicationContext());
+                    String displayName = contactHelper.getName();
+                    List<ContactHelper.Contact> contactsPhoneNrs = contactHelper.getPhoneNumbers();
+                    List<ContactHelper.Contact> contactMailAddresses = contactHelper.getMailAddresses();
+                    contactHelper.close();
 
                     // Write vCard to file
                     File vcfFile = null;
                     try {
-                        vcfFile = new File(getExternalFilesDir(null) + "/" + displayName + "_" + contactID + ".vcf");
+                        vcfFile = new File(getExternalFilesDir(null) + "/" + displayName + ".vcf");
                         FileWriter fw = new FileWriter(vcfFile);
                         fw.write("BEGIN:VCARD\r\n");
                         fw.write("VERSION:3.0\r\n");
                         fw.write("FN:" + displayName + "\r\n");
-                        for(int i = 0; i < phoneNrs.size(); i++){
-                            fw.write("TEL;TYPE=" + phoneTypes.get(i) + ",VOICE:" + phoneNrs.get(i) + "\r\n");
+                        for(int i = 0; i < contactsPhoneNrs.size(); i++){
+                            fw.write("TEL;TYPE=" + contactsPhoneNrs.get(i).getType() + ",VOICE:" + contactsPhoneNrs.get(i).getData() + "\r\n");
                         }
-                        for(int j = 0; j < mailAddresses.size(); j++){
-                            fw.write("EMAIL;TYPE=" + mailTypes.get(j) + ":" + mailAddresses.get(j) + "\r\n");
+                        for(int j = 0; j < contactMailAddresses.size(); j++){
+                            fw.write("EMAIL;TYPE=" + contactMailAddresses.get(j).getType() + ":" + contactMailAddresses.get(j).getData() + "\r\n");
                         }
                         fw.write("END:VCARD\r\n");
                         fw.close();
