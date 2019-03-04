@@ -9,14 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
 import it.feio.android.checklistview.interfaces.Constants;
-import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.export.Document;
 import it.feio.android.omninotes.export.NoteFacade;
 import it.feio.android.omninotes.helpers.LanguageHelper;
 import it.feio.android.omninotes.helpers.date.DateHelper;

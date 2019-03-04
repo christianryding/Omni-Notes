@@ -8,9 +8,9 @@ public class ExporterFactory {
         return new TextExporter();
     }
     public static Exporter createHtmlExporter() {
-        return new HtmlDocument();
+        return new HtmlExporter();
     }
     public static Exporter createPdfExporter() {
-        return new PdfDocument();
+        return new PdfExporter();
     }
 }
