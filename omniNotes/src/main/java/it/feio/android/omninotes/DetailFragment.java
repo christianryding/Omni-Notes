@@ -1585,9 +1585,10 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		final OnNoteSaved onNoteSaved = note ->
 			new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
 
+		// The note was probably saved when the file picker intent was launched, but check to be sure.
 		if (saveNotNeeded()) {
 			// Nothing is changed so export without saving
-			onNoteSaved.onNoteSaved(noteOriginal);
+			onNoteSaved.onNoteSaved(note);
 		} else {
 			// Save the note first, then continue with the export.
 			performSaveNote(onNoteSaved);
