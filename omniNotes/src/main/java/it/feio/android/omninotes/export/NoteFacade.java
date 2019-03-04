@@ -11,7 +11,6 @@ import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.helpers.date.DateHelper;
-import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 
 import static java.lang.Long.parseLong;
@@ -77,7 +76,10 @@ public class NoteFacade {
         if (!hasCategory()) {
             throw new IllegalStateException("Note has no category!");
         }
-        return emptyIfNull(note.getCategory().getColor());
+
+        // The color is stored as signed decimal number, so convert it to a HTML hex color value.
+        int color = Integer.parseInt(note.getCategory().getColor());
+        return String.format("#%06X", (0xFFFFFF & color));
     }
 
     public boolean isNoteChecklist() {
@@ -156,7 +158,7 @@ public class NoteFacade {
 
     public boolean hasContacts() {
         // TODO: Check to see if contacts is attached to the note
-        return false;
+        return true;
     }
 
     public List<Contact> getContacts() {
@@ -167,7 +169,8 @@ public class NoteFacade {
         ArrayList<Contact> contacts = new ArrayList<>();
 
         // TODO: Read contacts from note attachments
-        //contacts.add(new Contact("First", "Person","123-123456", "email@address.com"));
+        contacts.add(new Contact("First", "Person","123-123456", "email@address.com"));
+        contacts.add(new Contact("First2", "Person2","123-123123", "email2@address.com"));
 
         return contacts;
     }
