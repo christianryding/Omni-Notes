@@ -160,7 +160,6 @@
             pixlui:typeface="Roboto-Regular.ttf"
             android:textColor="@color/text_gray"/>
 
-    <!-- Contact Attachment -->
     <com.neopixl.pixlui.components.textview.TextView
         android:id="@+id/contact"
         android:layout_width="match_parent"

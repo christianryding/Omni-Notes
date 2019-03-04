@@ -763,8 +763,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 				// Media files will be opened in internal gallery
 			}
+			// When contact attachment is clicked, open contact information
 			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) ) {
-				// When contact attachment is clicked, open contact information
 				Uri contactData = attachment.getUri();
 				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
 				cursor.moveToFirst();
@@ -777,7 +777,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				try {
 					getContext().startActivity(contactIntent);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
 				}
 			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())

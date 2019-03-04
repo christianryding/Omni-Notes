@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -78,6 +79,10 @@ public class BitmapHelper {
 						BitmapUtils.decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R
 										.raw.files), width, height), width, height);
 			}
+		}
+		else if (Constants.MIME_TYPE_CONTACT.equals(mAttachment.getMime_type())) {
+			Log.d("XXX", "ASDASDASDASDASD");
+			bmp = ThumbnailUtils.extractThumbnail(BitmapUtils.decodeSampledBitmapFromResourceMemOpt(mContext.getResources().openRawResource(R.raw.vcard), width, height), width, height);
 		}
 
         return bmp;

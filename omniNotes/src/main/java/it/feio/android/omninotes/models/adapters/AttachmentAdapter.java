@@ -43,6 +43,7 @@ import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
 import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
+import it.feio.android.omninotes.utils.ConstantsBase;
 import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.date.DateUtils;
 
@@ -131,8 +132,7 @@ public class AttachmentAdapter extends BaseAdapter {
 
         // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
-
-            String name = "test";
+            String name = "";
             int id;
             Bitmap thumbnailBm = null;
 
@@ -152,8 +152,8 @@ public class AttachmentAdapter extends BaseAdapter {
             holder.text.setText(name);
             holder.text.setVisibility(View.VISIBLE);
 
+            // Get contacts photo
             try {
-                // Get contacts photo
                 InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
                         convertView.getContext().getContentResolver()
                         , mAttachment.getUri()
@@ -161,14 +161,14 @@ public class AttachmentAdapter extends BaseAdapter {
                 thumbnailBm = BitmapFactory.decodeStream(s);
                 s.close();
             }catch(Exception ioExc){
-
+                Log.e(Constants.TAG_CONTACT, "Could not retrieve thumbnail for contact");
             }
 
             // Load contacts thumbnail picture if available
             if (thumbnailBm == null) {
-                Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
+                Bitmap defaultBm = BitmapHelper.getBitmapFromAttachment(convertView.getContext(), mAttachment, 128, 128);
                 Glide.with(mActivity.getApplicationContext())
-                    .load(thumbnailUri)
+                    .load(defaultBm)
                     .into(holder.image);
             }else {
                 Glide.with(mActivity.getApplicationContext())
