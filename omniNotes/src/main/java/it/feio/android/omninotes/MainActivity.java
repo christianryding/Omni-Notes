@@ -19,18 +19,13 @@ package it.feio.android.omninotes;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -45,12 +40,8 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,11 +62,9 @@ import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.ContactHelper;
 import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
-import it.feio.android.omninotes.utils.VcardHelper;
 
 
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -475,63 +464,25 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
             shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
 
-            // Intent with single image attachment
+        // Intent with single image attachment
         } else if (note.getAttachmentsList().size() == 1) {
             shareIntent.setAction(Intent.ACTION_SEND);
             Attachment attachment = note.getAttachmentsList().get(0);
-            //TEST
+            shareIntent.setType(attachment.getMime_type());
+            shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getShareableUri(attachment));
 
-            // Export contact attachments to vcf file format
-            if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
-
-                // ContactHelper gets name, phone numbers and email addresses for specific contact
-                ContactHelper contactHelper = new ContactHelper(attachment, getApplicationContext());
-                String displayName = contactHelper.getName();
-                List<ContactHelper.Contact> contactsPhoneNrs = contactHelper.getPhoneNumbers();
-                List<ContactHelper.Contact> contactMailAddresses = contactHelper.getMailAddresses();
-                contactHelper.close();
-
-                VcardHelper vcardHelper = new VcardHelper(displayName, contactsPhoneNrs, contactMailAddresses);
-                File vcfFile = vcardHelper.writeVcard(getApplicationContext());
-
-                shareIntent.setType(Constants.MIME_TYPE_FILES);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getFileProvider(vcfFile));
-            }
-            // Other formats as they are
-            else {
-                shareIntent.setType(attachment.getMime_type());
-                shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getShareableUri(attachment));
-            }
-            // Intent with multiple images
+        // Intent with multiple images
         } else if (note.getAttachmentsList().size() > 1) {
             shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
             ArrayList<Uri> uris = new ArrayList<>();
             // A check to decide the mime type of attachments to share is done here
             HashMap<String, Boolean> mimeTypes = new HashMap<>();
+
             for (Attachment attachment : note.getAttachmentsList()) {
-
-                // Export contact attachments to vcf format
-                if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)){
-
-                    // ContactHelper gets name, phone numbers and email addresses for specific contact
-                    ContactHelper contactHelper = new ContactHelper(attachment, getApplicationContext());
-                    String displayName = contactHelper.getName();
-                    List<ContactHelper.Contact> contactsPhoneNrs = contactHelper.getPhoneNumbers();
-                    List<ContactHelper.Contact> contactMailAddresses = contactHelper.getMailAddresses();
-                    contactHelper.close();
-
-                    // Write vCard to file
-                    VcardHelper vcardHelper = new VcardHelper(displayName, contactsPhoneNrs, contactMailAddresses);
-                    File vcfFile = vcardHelper.writeVcard(getApplicationContext());
-
-                    uris.add(FileProviderHelper.getFileProvider(vcfFile));
-                    mimeTypes.put(Constants.MIME_TYPE_FILES, true);
-                }
-                else{
-                    uris.add(FileProviderHelper.getShareableUri(attachment));
-                    mimeTypes.put(attachment.getMime_type(), true);
-                }
+                uris.add(FileProviderHelper.getShareableUri(attachment));
+                mimeTypes.put(attachment.getMime_type(), true);
             }
+
             // If many mime types are present a general type is assigned to intent
             if (mimeTypes.size() > 1) {
                 shareIntent.setType("*/*");
