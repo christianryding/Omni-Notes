@@ -15,7 +15,8 @@ public class VcardHelper {
     private List<ContactHelper.Contact> contactsMailAddresses = new ArrayList<>();
 
     public VcardHelper(String contactsName,List <ContactHelper.Contact> contactsPhoneNrs, List<ContactHelper.Contact> contactsMailAddresses){
-
+        this.contactsPhoneNrs = new ArrayList<>();
+        this.contactsMailAddresses = new ArrayList<>();
         this.contactsName = contactsName;
         this.contactsPhoneNrs = contactsPhoneNrs;
         this.contactsMailAddresses = contactsMailAddresses;
@@ -38,6 +39,8 @@ public class VcardHelper {
             }
             fw.write("END:VCARD\r\n");
             fw.close();
+
+            Log.d(Constants.TAG_VCARD, "wrote Vcard");
         } catch (Exception e) {
             Log.e(Constants.TAG_VCARD, "Could not write to vCard file");
         }
