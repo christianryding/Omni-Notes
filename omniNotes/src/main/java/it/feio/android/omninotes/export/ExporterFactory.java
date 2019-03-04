@@ -5,7 +5,7 @@ package it.feio.android.omninotes.export;
  */
 public class ExporterFactory {
     public static Exporter createTextExporter() {
-        return new TextDocument();
+        return new TextExporter();
     }
     public static Exporter createHtmlExporter() {
         return new HtmlDocument();

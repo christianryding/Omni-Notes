@@ -27,10 +27,10 @@ public class NoteFacade {
     public static final int STRING_LOCATION    = R.string.location;
 
     public class Contact {
-        final String firstname;
-        final String lastname;
-        final String phone;
-        final String email;
+        public final String firstname;
+        public final String lastname;
+        public final String phone;
+        public final String email;
 
         public Contact(String firstname, String lastname, String phone, String email) {
             this.firstname = firstname;
@@ -41,8 +41,8 @@ public class NoteFacade {
     }
 
     public class ChecklistItem {
-        final String text;
-        final boolean isChecked;
+        public final String text;
+        public final boolean isChecked;
 
         public ChecklistItem(String text, boolean isChecked) {
             this.text = text;
@@ -62,22 +62,22 @@ public class NoteFacade {
         return emptyIfNull(note.getTitle());
     }
 
+    public boolean hasCategory() {
+        return note.getCategory() != null;
+    }
+
     public String getCategoryName() {
-        Category category = note.getCategory();
-        if (category != null) {
-            return category.getName();
-        }  else {
-            return "";
+        if (!hasCategory()) {
+            throw new IllegalStateException("Note has no category!");
         }
+        return emptyIfNull(note.getCategory().getName());
     }
 
     public String getCategoryColor() {
-        Category category = note.getCategory();
-        if (category != null) {
-            return category.getColor();
-        }  else {
-            return "";
+        if (!hasCategory()) {
+            throw new IllegalStateException("Note has no category!");
         }
+        return emptyIfNull(note.getCategory().getColor());
     }
 
     public boolean isNoteChecklist() {
@@ -116,7 +116,7 @@ public class NoteFacade {
     }
 
     public boolean hasLocation() {
-        return TextUtils.isEmpty(note.getAddress());
+        return !TextUtils.isEmpty(note.getAddress());
     }
 
     /**
