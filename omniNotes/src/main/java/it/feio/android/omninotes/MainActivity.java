@@ -75,6 +75,7 @@ import it.feio.android.omninotes.utils.ContactHelper;
 import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
+import it.feio.android.omninotes.utils.VcardHelper;
 
 
 public class MainActivity extends BaseActivity implements OnDateSetListener, OnTimeSetListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -478,9 +479,29 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
         } else if (note.getAttachmentsList().size() == 1) {
             shareIntent.setAction(Intent.ACTION_SEND);
             Attachment attachment = note.getAttachmentsList().get(0);
-            shareIntent.setType(attachment.getMime_type());
-            shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getShareableUri(attachment));
+            //TEST
 
+            // Export contact attachments to vcf file format
+            if(attachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
+
+                // ContactHelper gets name, phone numbers and email addresses for specific contact
+                ContactHelper contactHelper = new ContactHelper(attachment, getApplicationContext());
+                String displayName = contactHelper.getName();
+                List<ContactHelper.Contact> contactsPhoneNrs = contactHelper.getPhoneNumbers();
+                List<ContactHelper.Contact> contactMailAddresses = contactHelper.getMailAddresses();
+                contactHelper.close();
+
+                VcardHelper vcardHelper = new VcardHelper(displayName, contactsPhoneNrs, contactMailAddresses);
+                File vcfFile = vcardHelper.writeVcard(getApplicationContext());
+
+                shareIntent.setType(Constants.MIME_TYPE_FILES);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getFileProvider(vcfFile));
+            }
+            // Other formats as they are
+            else {
+                shareIntent.setType(attachment.getMime_type());
+                shareIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getShareableUri(attachment));
+            }
             // Intent with multiple images
         } else if (note.getAttachmentsList().size() > 1) {
             shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
@@ -500,26 +521,11 @@ public class MainActivity extends BaseActivity implements OnDateSetListener, OnT
                     contactHelper.close();
 
                     // Write vCard to file
-                    File vcfFile = null;
-                    try {
-                        vcfFile = new File(getExternalFilesDir(null) + "/" + displayName + ".vcf");
-                        FileWriter fw = new FileWriter(vcfFile);
-                        fw.write("BEGIN:VCARD\r\n");
-                        fw.write("VERSION:3.0\r\n");
-                        fw.write("FN:" + displayName + "\r\n");
-                        for(int i = 0; i < contactsPhoneNrs.size(); i++){
-                            fw.write("TEL;TYPE=" + contactsPhoneNrs.get(i).getType() + ",VOICE:" + contactsPhoneNrs.get(i).getData() + "\r\n");
-                        }
-                        for(int j = 0; j < contactMailAddresses.size(); j++){
-                            fw.write("EMAIL;TYPE=" + contactMailAddresses.get(j).getType() + ":" + contactMailAddresses.get(j).getData() + "\r\n");
-                        }
-                        fw.write("END:VCARD\r\n");
-                        fw.close();
-                    }catch(Exception e){
-                        Log.e(Constants.TAG_VCARD, "Could not write to vCard file");
-                    }
+                    VcardHelper vcardHelper = new VcardHelper(displayName, contactsPhoneNrs, contactMailAddresses);
+                    File vcfFile = vcardHelper.writeVcard(getApplicationContext());
+
                     uris.add(FileProviderHelper.getFileProvider(vcfFile));
-                    mimeTypes.put(Constants.MIME_TYPE_CONTACT_EXT, true);
+                    mimeTypes.put(Constants.MIME_TYPE_FILES, true);
                 }
                 else{
                     uris.add(FileProviderHelper.getShareableUri(attachment));
