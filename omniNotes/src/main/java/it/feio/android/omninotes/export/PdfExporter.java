@@ -16,31 +16,30 @@ import java.io.OutputStream;
  * Exports a note to a pdf file.
  *
  * TODO:
- * - Fix the character spacing. Something is wrong with the character spacing.
- * - Cleanup the code.
- * - Support multiple pages.
+ * - The pager needs to be quite big to not get text with irregular character spacing. But this
+ *   makes the resulting PDF quite "big" when opening it in a PDF viewer. Figure out how to solve
+ *   this.
+ * - Only single pages are supported at the moment. Support multiple pages.
  */
 public class PdfExporter extends ExporterBase {
-    // The PDF document is the of a A4 paper in mm
-    private final int WIDTH = 2100;
-    private final int HEIGHT = 2970;
+    // Paper dimension and margins
+    private final int PAPER_WIDTH = 2100;
+    private final int PAPER_HEIGHT = 2970;
+    private final int MARGIN_X = 200;
+    private final int MARGIN_Y = 300;
 
-    private final int ORIGIN_X = 200;
-    private final int ORIGIN_Y = 300;
-
+    // Header text sizes
     private final int H1_SIZE = 120;
     private final int H2_SIZE = 100;
     private final int H3_SIZE = 80;
+    // Content text size
     private final int TEXT_SIZE = 40;
+    // Space between lines. The spacing will be this multiplied with the text size.
+    private final float LINE_SPACE = 0.3f;
 
     private NoteFacade facade = null;
-
     private PdfDocument document = null;
     private Canvas canvas = null;
-
-
-    // The current print position on the canvas
-    private int position = 0;
 
     private Paint paintH1;
     private Paint paintH2;
@@ -72,13 +71,12 @@ public class PdfExporter extends ExporterBase {
     @Override
     protected void createDocument(NoteFacade facade) throws ExporterException {
         this.facade = facade;
-        position = 0;
 
         // create a new document
         document = new PdfDocument();
 
         // crate a page description
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(WIDTH, HEIGHT, 1).create();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(PAPER_WIDTH, PAPER_HEIGHT, 1).create();
 
         // start a page
         PdfDocument.Page page = document.startPage(pageInfo);
@@ -86,7 +84,7 @@ public class PdfExporter extends ExporterBase {
 
         // draw something on the page
         canvas = page.getCanvas();
-        canvas.translate(ORIGIN_X, ORIGIN_Y);
+        setOriginTranslation();
 
         printTitle();
         printContent();
@@ -108,10 +106,33 @@ public class PdfExporter extends ExporterBase {
         document.close();
     }
 
+    private void setOriginTranslation() {
+        canvas.translate(MARGIN_X, MARGIN_Y);
+    }
+
     private void print(String text, Paint paint) {
-        position += paint.getTextSize();
-        canvas.drawText(text, 0, position, paint);
-        position += 3;
+        canvas.translate(0, paint.getTextSize());
+        canvas.drawText(text, 0, 0, paint);
+        canvas.translate(0, paint.getTextSize() * LINE_SPACE);
+    }
+
+    private void printColumns(String col1, String col2, float col1Width, Paint paint) {
+        float colSeparation = paintText.getTextSize();
+
+        canvas.translate(0, paint.getTextSize());
+
+        canvas.drawText(col1, 0, 0, paint);
+
+        canvas.save();
+        canvas.translate(col1Width + colSeparation, 0);
+        canvas.drawText(col2, 0, 0, paint);
+        canvas.restore();
+
+        canvas.translate(0, paint.getTextSize() * LINE_SPACE);
+    }
+
+    private void printEmpty(Paint paint) {
+        canvas.translate(0, paint.getTextSize());
     }
 
 
@@ -127,6 +148,8 @@ public class PdfExporter extends ExporterBase {
         }
 
         print(title, paintH1);
+
+        printEmpty(paintText);
     }
 
     /**
@@ -146,19 +169,16 @@ public class PdfExporter extends ExporterBase {
             StaticLayout layout = new StaticLayout(
                     text,
                     paint,
-                    WIDTH - ORIGIN_X * 2,
+                    PAPER_WIDTH - MARGIN_X * 2,
                     Layout.Alignment.ALIGN_NORMAL,
                     1.0f,
                     3.0f,
                     false);
 
-            canvas.save();
-            canvas.translate(0, position);
             layout.draw(canvas);
-            canvas.restore();
 
-
-            position += layout.getHeight() + 5;
+            canvas.translate(0, layout.getHeight());
+            printEmpty(paintText);
         }
     }
 
@@ -170,7 +190,7 @@ public class PdfExporter extends ExporterBase {
             return;
         }
 
-        position += 5;
+        printEmpty(paintText);
 
         print(facade.getString(NoteFacade.STRING_ATTACHMENTS), paintH2);
 
@@ -184,6 +204,7 @@ public class PdfExporter extends ExporterBase {
      */
     private void printLocation() {
         if (facade.hasLocation()) {
+            printEmpty(paintText);
             print(facade.getString(NoteFacade.STRING_LOCATION), paintH3);
             print(facade.getLocation(), paintText);
         }
@@ -194,6 +215,7 @@ public class PdfExporter extends ExporterBase {
      */
     private void printReminder() {
         if (facade.hasReminder()) {
+            printEmpty(paintText);
             print(facade.getString(NoteFacade.STRING_REMINDER), paintH3);
             print(facade.getReminder(), paintText);
         }
@@ -204,6 +226,7 @@ public class PdfExporter extends ExporterBase {
      */
     private void printContacts() {
         if (facade.hasContacts()) {
+            printEmpty(paintText);
             print(facade.getString(NoteFacade.STRING_CONTACTS), paintH3);
 
             String name = facade.getString(NoteFacade.STRING_NAME);
@@ -215,13 +238,12 @@ public class PdfExporter extends ExporterBase {
 
             // Add the contact info for all contacts
             for (NoteFacade.Contact contact : facade.getContacts()) {
-                printContactRow(name, contact.name, longest);
-                printContactRow(phone, contact.phone, longest);
-                printContactRow(email, contact.email, longest);
-                position += 3;
-            }
+                printColumns(name, contact.name, longest, paintText);
+                printColumns(phone, contact.phone, longest, paintText);
+                printColumns(email, contact.email, longest, paintText);
 
-            position += 5;
+                printEmpty(paintText);
+            }
         }
     }
 
@@ -229,19 +251,17 @@ public class PdfExporter extends ExporterBase {
      * Add note time stamp
      */
     private void printTimeStamp() {
-        int oldPos = position;
-        position = HEIGHT - ORIGIN_Y * 2;
-        print(facade.getTimestamp(), paintText);
-        position = oldPos;
-    }
-
-    private void printContactRow(String col1, String col2, float col1Width) {
-        int oldPos = position;
-        print(col1, paintText);
-        position = oldPos;
         canvas.save();
-        canvas.translate(col1Width+5, 0);
-        print(col2, paintText);
+
+        // Set to identity matrix
+        canvas.setMatrix(null);
+
+        // Translate to the page foot
+        setOriginTranslation();
+        canvas.translate(0, PAPER_HEIGHT - MARGIN_Y * 2);
+
+        print(facade.getTimestamp(), paintText);
+
         canvas.restore();
     }
 
