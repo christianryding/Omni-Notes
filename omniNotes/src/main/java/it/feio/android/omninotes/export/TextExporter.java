@@ -126,6 +126,8 @@ public class TextExporter extends ExporterBase {
      */
     private void exportContacts() {
         if (facade.hasContacts()) {
+            appendLabel(facade.getString(NoteFacade.STRING_CONTACTS));
+
             String name = facade.getString(NoteFacade.STRING_NAME);
             String phone = facade.getString(NoteFacade.STRING_PHONE);
             String email = facade.getString(NoteFacade.STRING_EMAIL);
@@ -142,7 +144,7 @@ public class TextExporter extends ExporterBase {
 
             // Add the contact info for all contacts
             for (NoteFacade.Contact contact : facade.getContacts()) {
-                sb.append(name).append(contact.firstname).append(" ").append(contact.lastname).append(NEWLINE);
+                sb.append(name).append(contact.name).append(NEWLINE);
                 sb.append(phone).append(contact.phone).append(NEWLINE);
                 sb.append(email).append(contact.email).append(NEWLINE);
                 sb.append(NEWLINE);

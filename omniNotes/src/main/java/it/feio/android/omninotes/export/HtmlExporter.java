@@ -254,7 +254,7 @@ public class HtmlExporter extends ExporterBase {
                     .variable("NAME_LABEL", () -> facade.getString(NoteFacade.STRING_NAME))
                     .variable("PHONE_LABEL", () -> facade.getString(NoteFacade.STRING_PHONE))
                     .variable("EMAIL_LABEL", () -> facade.getString(NoteFacade.STRING_EMAIL))
-                    .variable("NAME", () -> contact.firstname + " " + contact.lastname)
+                    .variable("NAME", () -> contact.name)
                     .variable("PHONE", () -> contact.phone)
                     .variable("EMAIL", () -> contact.email)
                     .replace());

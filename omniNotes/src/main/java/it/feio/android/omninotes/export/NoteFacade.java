@@ -12,6 +12,7 @@ import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.helpers.date.DateHelper;
 import it.feio.android.omninotes.models.Note;
+import it.feio.android.omninotes.utils.ContactHelper;
 
 import static java.lang.Long.parseLong;
 
@@ -26,14 +27,12 @@ public class NoteFacade {
     public static final int STRING_LOCATION    = R.string.location;
 
     public class Contact {
-        public final String firstname;
-        public final String lastname;
+        public final String name;
         public final String phone;
         public final String email;
 
-        public Contact(String firstname, String lastname, String phone, String email) {
-            this.firstname = firstname;
-            this.lastname = lastname;
+        public Contact(String name, String phone, String email) {
+            this.name = name;
             this.phone = phone;
             this.email = email;
         }
@@ -51,10 +50,12 @@ public class NoteFacade {
 
     private final Note note;
     private final Context context;
+    private final List<ContactHelper> contactHelpers;
 
     public NoteFacade(Note note) {
         this.note = note;
         this.context = OmniNotes.getAppContext();
+        this.contactHelpers = ContactHelper.getAllContacts(note, context);
     }
 
     public String getTitle() {
@@ -157,8 +158,7 @@ public class NoteFacade {
     }
 
     public boolean hasContacts() {
-        // TODO: Check to see if contacts is attached to the note
-        return true;
+        return !contactHelpers.isEmpty();
     }
 
     public List<Contact> getContacts() {
@@ -166,11 +166,29 @@ public class NoteFacade {
             throw new IllegalStateException("Note doesn't have any contacts");
         }
 
+        // Collect all contact information
         ArrayList<Contact> contacts = new ArrayList<>();
+        for (ContactHelper helper: contactHelpers) {
+            String name = helper.getName();
+            StringBuilder phone = new StringBuilder();
+            StringBuilder email = new StringBuilder();
 
-        // TODO: Read contacts from note attachments
-        contacts.add(new Contact("First", "Person","123-123456", "email@address.com"));
-        contacts.add(new Contact("First2", "Person2","123-123123", "email2@address.com"));
+            for (ContactHelper.Contact c: helper.getPhoneNumbers()) {
+                if (phone.length() != 0) {
+                    phone.append(", ");
+                }
+                phone.append(c.getData());
+            }
+
+            for (ContactHelper.Contact c: helper.getMailAddresses()) {
+                if (email.length() != 0) {
+                    email.append(", ");
+                }
+                email.append(c.getData());
+            }
+
+            contacts.add(new Contact(name, phone.toString(), email.toString()));
+        }
 
         return contacts;
     }

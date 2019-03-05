@@ -215,7 +215,7 @@ public class PdfExporter extends ExporterBase {
 
             // Add the contact info for all contacts
             for (NoteFacade.Contact contact : facade.getContacts()) {
-                printContactRow(name, contact.firstname + " " + contact.lastname, longest);
+                printContactRow(name, contact.name, longest);
                 printContactRow(phone, contact.phone, longest);
                 printContactRow(email, contact.email, longest);
                 position += 3;
