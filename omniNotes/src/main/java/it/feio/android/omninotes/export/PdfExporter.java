@@ -22,16 +22,16 @@ import java.io.OutputStream;
  */
 public class PdfExporter extends ExporterBase {
     // The PDF document is the of a A4 paper in mm
-    private final int WIDTH = 210;
-    private final int HEIGHT = 297;
+    private final int WIDTH = 2100;
+    private final int HEIGHT = 2970;
 
-    private final int ORIGIN_X = 20;
-    private final int ORIGIN_Y = 30;
+    private final int ORIGIN_X = 200;
+    private final int ORIGIN_Y = 300;
 
-    private final int H1_SIZE = 12;
-    private final int H2_SIZE = 10;
-    private final int H3_SIZE = 8;
-    private final int TEXT_SIZE = 4;
+    private final int H1_SIZE = 120;
+    private final int H2_SIZE = 100;
+    private final int H3_SIZE = 80;
+    private final int TEXT_SIZE = 40;
 
     private NoteFacade facade = null;
 
@@ -78,10 +78,11 @@ public class PdfExporter extends ExporterBase {
         document = new PdfDocument();
 
         // crate a page description
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(210, 297, 1).create();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(WIDTH, HEIGHT, 1).create();
 
         // start a page
         PdfDocument.Page page = document.startPage(pageInfo);
+
 
         // draw something on the page
         canvas = page.getCanvas();
