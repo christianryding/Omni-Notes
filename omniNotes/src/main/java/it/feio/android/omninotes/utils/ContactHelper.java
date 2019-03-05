@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.feio.android.omninotes.models.Attachment;
+import it.feio.android.omninotes.models.Note;
 
 /**
  * Class to help retrieve information about contact attachment
@@ -34,6 +35,22 @@ public class ContactHelper {
         this.contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
     }
 
+    /**
+     * Takes a note and returns a list of ContactHelper objects, one for each contact attachment.
+     *
+     * @param note Note with contact attachments
+     * @param context Context used when constructing a helper.
+     * @return The list of ContactHelpers
+     */
+    public static List<ContactHelper> getAllContacts(Note note, Context context) {
+        ArrayList<ContactHelper> helpers = new ArrayList<>();
+        for (Attachment attachment: note.getAttachmentsList()) {
+            if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
+                helpers.add(new ContactHelper(attachment, context));
+            }
+        }
+        return helpers;
+    }
 
     /**
      * Return name of contact attachment
