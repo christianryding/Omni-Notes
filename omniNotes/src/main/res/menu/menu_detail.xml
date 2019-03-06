@@ -78,6 +78,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_export"
+        android:icon="@drawable/ic_file_document_white_48dp"
         android:orderInCategory="750"
         android:title="@string/export"
         android:visible="false"
