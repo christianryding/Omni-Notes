@@ -16,16 +16,45 @@ import it.feio.android.omninotes.utils.ContactHelper;
 
 import static java.lang.Long.parseLong;
 
+/**
+ * Implements an interface to a note that is more suited for the exporter code. This take care of
+ * retrieving the information from the note and converts it to string data. The resulting string
+ * data could be used directly in the resulting documents by the exporters. The class also take care
+ * of any translation that is necessary.
+ */
 public class NoteFacade {
-    // Ids for string resources used in the final document
+    /**
+     * Attachments header text
+     */
     public static final int STRING_ATTACHMENTS = R.string.attachments_title;
+    /**
+     * Contacts header text
+     */
     public static final int STRING_CONTACTS    = R.string.contacts_label;
+    /**
+     * Name label in contact entry
+     */
     public static final int STRING_NAME        = R.string.name_label;
+    /**
+     * Phone number label in contact entry
+     */
     public static final int STRING_PHONE       = R.string.phonenumber_label;
+    /**
+     * Email label in contact entry
+     */
     public static final int STRING_EMAIL       = R.string.email_label;
+    /**
+     * Reminder attachment label
+     */
     public static final int STRING_REMINDER    = R.string.reminder_label;
+    /**
+     * Location attachment label
+     */
     public static final int STRING_LOCATION    = R.string.location;
 
+    /**
+     * Represent a contact attached to a note.
+     */
     public class Contact {
         public final String name;
         public final String phone;
@@ -38,8 +67,17 @@ public class NoteFacade {
         }
     }
 
+    /**
+     * Represents a item in the checklist
+     */
     public class ChecklistItem {
+        /**
+         * Item text
+         */
         public final String text;
+        /**
+         * If the item should appear checked or not in the final document
+         */
         public final boolean isChecked;
 
         public ChecklistItem(String text, boolean isChecked) {
@@ -48,32 +86,59 @@ public class NoteFacade {
         }
     }
 
+    /**
+     * The note that is used when retrieving information
+     */
     private final Note note;
+    /**
+     * Current application context
+     */
     private final Context context;
+    /**
+     * Stores on ContactHelper for each contact in the note.
+     */
     private final List<ContactHelper> contactHelpers;
 
+    /**
+     * Constructs a NoteFacade for a specific note
+     * @param note which note to construct the facade for.
+     */
     public NoteFacade(Note note) {
         this.note = note;
         this.context = OmniNotes.getAppContext();
         this.contactHelpers = ContactHelper.getAllContacts(note, context);
     }
 
+    /**
+     * @return title of the note. Empty string if the note lacks a title.
+     */
     public String getTitle() {
         return emptyIfNull(note.getTitle());
     }
 
+    /**
+     * @return true if the note belongs to a category, else false.
+     */
     public boolean hasCategory() {
         return note.getCategory() != null;
     }
 
-    public String getCategoryName() {
+    /**
+     * @return category name.
+     * @throws IllegalStateException if <code>hasCategory</code> returns false.
+     */
+    public String getCategoryName() throws IllegalStateException {
         if (!hasCategory()) {
             throw new IllegalStateException("Note has no category!");
         }
         return emptyIfNull(note.getCategory().getName());
     }
 
-    public String getCategoryColor() {
+    /**
+     * @return category color as a HTML hex color value.
+     * @throws IllegalStateException if <code>hasCategory</code> returns false.
+     */
+    public String getCategoryColor() throws IllegalStateException {
         if (!hasCategory()) {
             throw new IllegalStateException("Note has no category!");
         }
@@ -83,11 +148,19 @@ public class NoteFacade {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
+    /**
+     * @return true if the note is a checklist, false if it's a text note.
+     */
     public boolean isNoteChecklist() {
         return note.isChecklist();
     }
 
-    public String getTextContent() {
+    /**
+     * @return A string containg the note text.
+     * @throws IllegalStateException If this note is a checklist, <code>isNoteChecklist</code>
+     * returns true in that case.
+     */
+    public String getTextContent() throws IllegalStateException {
         if (isNoteChecklist()) {
             throw new IllegalStateException("Note is a checklist!");
         } else {
@@ -95,7 +168,12 @@ public class NoteFacade {
         }
     }
 
-    public List<ChecklistItem> getChecklist() {
+    /**
+     * Creates a list of <code>CheckListItem</code>, one for each item in the checklist.
+     * @return list of items.
+     * @throws IllegalStateException if isNoteChecklist returns false.
+     */
+    public List<ChecklistItem> getChecklist() throws IllegalStateException {
         if (!isNoteChecklist()) {
             throw new IllegalStateException("Note is not a checklist!");
         }
@@ -118,6 +196,9 @@ public class NoteFacade {
         return items;
     }
 
+    /**
+     * @return if this note has a location attachment.
+     */
     public boolean hasLocation() {
         return !TextUtils.isEmpty(note.getAddress());
     }
@@ -126,7 +207,7 @@ public class NoteFacade {
      * TODO: Does a note with a location always have an address? What about longitude/latitude?
      * @return The address attached to the note.
      */
-    public String getLocation() {
+    public String getLocation() throws IllegalStateException {
         if (!hasLocation()) {
             throw new IllegalStateException("Note doesn't have a location");
         }
@@ -134,6 +215,9 @@ public class NoteFacade {
         return note.getAddress();
     }
 
+    /**
+     * @return if this note has a reminder attachment.
+     */
     public boolean hasReminder() {
         return note.getAlarm() != null;
     }
@@ -157,11 +241,19 @@ public class NoteFacade {
         }
     }
 
+    /**
+     * @return if this note has contacts attached to it.
+     */
     public boolean hasContacts() {
         return !contactHelpers.isEmpty();
     }
 
-    public List<Contact> getContacts() {
+    /**
+     * Retrieves all contacts attached to a note and saves it to a list.
+     * @return a list with contacts.
+     * @throws IllegalStateException if <code>hasContacts</code> returns false.
+     */
+    public List<Contact> getContacts() throws IllegalStateException {
         if (!hasContacts()) {
             throw new IllegalStateException("Note doesn't have any contacts");
         }
@@ -193,6 +285,11 @@ public class NoteFacade {
         return contacts;
     }
 
+    /**
+     * Constructs a localized time stamp string that tells when the note was created and when it
+     * was last modified.
+     * @return timestamp string.
+     */
     public String getTimestamp() {
         final Long lastMod = note.getLastModification();
         final Long creation = note.getCreation();
@@ -222,6 +319,10 @@ public class NoteFacade {
         return context.getString(id);
     }
 
+    /**
+     * @param str the string.
+     * @return an empty string if <code>str</code> is null, otherwise <code>str</code>.
+     */
     private String emptyIfNull(String str) {
         if (str == null) {
             return "";

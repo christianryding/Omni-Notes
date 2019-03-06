@@ -6,9 +6,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
- * Exports a note to a HTML file.
+ * Exports a note to a HTML file. Doesn't export images.
  */
 public class HtmlExporter extends ExporterBase {
+    /**
+     * Overall structure of the resulting HTML file. Strings that starts with $ will be replaced
+     * by information from the note, this applies to all template strings arrays.
+     */
     private final static String[] HTML_TEMPLATE = {
             "<!DOCTYPE html>",
             "<html lang=\"en\">",
@@ -83,12 +87,18 @@ public class HtmlExporter extends ExporterBase {
             "</html>"
     };
 
+    /**
+     * "Content" part of a note, this will contain actual text of a note.
+     */
     private final static String[] TEXT_CONTENT_TEMPLATE = {
             "<section class=\"content\">",
             "$TEXT",
             "</section>"
     };
 
+    /**
+     * Used instead of <code>TEXT_CONTENT_TEMPLATE</code> if the note is a checklist.
+     */
     private final static String[] CHECKLIST_CONTENT_TEMPLATE = {
             "<section class=\"content\">",
             "<ul>",
@@ -97,14 +107,23 @@ public class HtmlExporter extends ExporterBase {
             "</section>"
     };
 
+    /**
+     * A checked item in the checklist.
+     */
     private final static String[] CHECKED_ITEM_TEMPLATE = {
             "<li>☑ ", "$TEXT", "</li>",
     };
 
+    /**
+     * An unchecked item in the checklist.
+     */
     private final static String[] UNCHECKED_ITEM_TEMPLATE = {
             "<li>☐ ", "$TEXT", "</li>",
     };
 
+    /**
+     * Attachments section
+     */
     private final static String[] ATTACHMENTS_TEMPLATE = {
             "<section class=\"attachments\">",
             "<h2>", "$ATTACHMENTS_TITLE", "</h2>",
@@ -112,21 +131,34 @@ public class HtmlExporter extends ExporterBase {
             "</section>"
     };
 
+    /**
+     * Location attachment
+     */
     private final static String[] LOCATION_TEMPLATE = {
             "<h3>", "$LOCATION_TITLE", "</h3>",
             "<p>", "$LOCATION", "</p>"
     };
 
+    /**
+     * Reminder attachment
+     */
     private final static String[] REMINDER_TEMPLATE = {
             "<h3>", "$REMINDER_TITLE", "</h3>",
             "<p>", "$REMINDER", "</p>"
     };
 
+    /**
+     * Contacts attachment
+     */
     private final static String[] CONTACTS_TEMPLATE = {
             "<h3>", "$CONTACTS_TITLE", "</h3>",
             "$CONTACT_ITEMS",
     };
 
+    /**
+     * A contact entry of t he contacts section. Contains name, phone number and email address of a
+     * contact.
+     */
     private final static String[] CONTACT_ITEM_TEMPLATE = {
             "<table class=\"contacts\">",
             "    <tr>",
@@ -144,21 +176,28 @@ public class HtmlExporter extends ExporterBase {
             "</table>"
     };
 
+    /**
+     * Represents the HTML document that is constructed by createDocument.
+     */
     private String document = null;
-    NoteFacade facade = null;
+    /**
+     * Note that is exported
+     */
+    private NoteFacade facade = null;
+
 
     @Override
     protected void createDocument(NoteFacade facade) throws ExporterException {
         this.facade = facade;
 
         document =
-        Replacer.make(HTML_TEMPLATE)
-                .variable("TITLE", this::getTitle)
-                .variable("CATEGORY_COLOR", this::getCatColor)
-                .variable("CONTENT", this::getContent)
-                .variable("ATTACHMENTS", this::getAttachments)
-                .variable("TIME_STAMP", facade::getTimestamp)
-                .replace();
+            Replacer.make(HTML_TEMPLATE)
+                    .variable("TITLE", this::getTitle)
+                    .variable("CATEGORY_COLOR", this::getCatColor)
+                    .variable("CONTENT", this::getContent)
+                    .variable("ATTACHMENTS", this::getAttachments)
+                    .variable("TIME_STAMP", facade::getTimestamp)
+                    .replace();
     }
 
     @Override
@@ -172,6 +211,10 @@ public class HtmlExporter extends ExporterBase {
         }
     }
 
+    /**
+     * Constructs the note title string. Includes category name if the note has one.
+     * @return title
+     */
     private String getTitle() {
         if (facade.hasCategory()) {
             return facade.getTitle() + " (" + facade.getCategoryName() + ")";
@@ -180,6 +223,10 @@ public class HtmlExporter extends ExporterBase {
         }
     }
 
+    /**
+     * The returns the color in a HTML hex code format.
+     * @return the color of the note category, #ffffff is for a note without a category.
+     */
     private String getCatColor() {
         if (facade.hasCategory()) {
             return facade.getCategoryColor();
@@ -188,6 +235,11 @@ public class HtmlExporter extends ExporterBase {
         }
     }
 
+    /**
+     * Constructs the content section of the document. Depending on the note, this will either be
+     * a text or a checklist.
+     * @return HTML code
+     */
     private String getContent() {
         if (!facade.isNoteChecklist()) {
             final String text = facade.getTextContent().replace("\n", "<br>");
@@ -205,6 +257,11 @@ public class HtmlExporter extends ExporterBase {
 
     }
 
+    /**
+     * Constructs the attachments section of the note. This collects all available attachments and
+     * create the necessary HTML code.
+     * @return HTML code
+     */
     private String getAttachments() {
         String attachments  = getLocation() + getReminder() + getContacts();
 
@@ -218,7 +275,10 @@ public class HtmlExporter extends ExporterBase {
                 .replace();
     }
 
-
+    /**
+     * Constructs HTML for a location attachment.
+     * @return HTML code.
+     */
     private String getLocation() {
         if (facade.hasLocation()) {
             return Replacer
@@ -231,6 +291,10 @@ public class HtmlExporter extends ExporterBase {
         }
     }
 
+    /**
+     * Constructs HTML for a reminder attachment.
+     * @return HTML code.
+     */
     private String getReminder() {
         if (facade.hasReminder()) {
             return Replacer
@@ -243,6 +307,10 @@ public class HtmlExporter extends ExporterBase {
         }
     }
 
+    /**
+     * Constructs HTML for the contacts attachment.
+     * @return HTML code.
+     */
     private String getContacts() {
         if (!facade.hasContacts()) {
             return "";
@@ -267,6 +335,11 @@ public class HtmlExporter extends ExporterBase {
                 .replace();
     }
 
+    /**
+     * Constructs HTML for the checklist. This would be string of &lt;li&gt; elements, one for
+     * each checklist item.
+     * @return HTML code.
+     */
     private String getChecklistItems() {
         StringBuilder all = new StringBuilder();
 

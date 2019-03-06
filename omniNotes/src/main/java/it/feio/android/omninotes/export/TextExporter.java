@@ -9,18 +9,24 @@ import java.io.PrintWriter;
  * Exports a note to a text file.
  */
 public class TextExporter extends ExporterBase {
+    /**
+     * String to be used as new line character sequence.
+     */
     private final static String NEWLINE = "\n";
+    /**
+     * Character to use for the underscore
+     */
     private final static char UNDERLINE_CHAR = '=';
 
+    /**
+     * Contains the resulting text file content.
+     */
     private StringBuilder sb = null;
+    /**
+     * The note that is exported.
+     */
     private NoteFacade facade = null;
 
-    /**
-     * Creates the text document by filling up the string builder with the information from the
-     * note. The resulting string will be the content of the exported textile.
-     * @param facade
-     * @throws ExporterException
-     */
     @Override
     protected void createDocument(NoteFacade facade) throws ExporterException {
         sb = new StringBuilder();
@@ -32,11 +38,7 @@ public class TextExporter extends ExporterBase {
         exportTimeStamp();
     }
 
-    /**
-     * Writes the content of the StringBuilder to the output stream.
-     * @param os
-     * @throws ExporterException Thrown if an IO-error occurs.
-     */
+
     @Override
     protected void writeDocument(OutputStream os) throws ExporterException {
         try (OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
@@ -48,9 +50,6 @@ public class TextExporter extends ExporterBase {
         }
     }
 
-    //
-    // Methods to add the different note parts to the StringBuilder
-    //
 
     /**
      * Add note title
