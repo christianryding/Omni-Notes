@@ -37,8 +37,7 @@ public class ExporterNoteFacadeTest extends AndroidTestCase {
     private static final String LOCATION = "test address";
     private static final String REMINDER = "Weekly on Tuesday starting from Fri, Mar 1 7:18 PM";
     private static final String RECURRENCE_RULE = "FREQ=WEEKLY;WKST=SU;BYDAY=TU";
-    private static final String CONTACT_FIRST_NAME = "";
-    private static final String CONTACT_LAST_NAME = "";
+    private static final String CONTACT_NAME = "";
     private static final String CONTACT_PHONE = "";
     private static final String CONTACT_EMAIL = "";
 

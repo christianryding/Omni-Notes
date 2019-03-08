@@ -20,26 +20,26 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class ExportTextTest extends ExportTestBase {
+public class ExportHtmlTest extends ExportTestBase {
     @Override
     String getExtension() {
-        return ".txt";
+        return ".html";
     }
 
     @Override
     String getMime() {
-        return "text/plain";
+        return "text/html";
     }
 
     @Override
     ViewInteraction getFormatViewInteraction() {
         return onView(
-            allOf(withId(R.id.export_text), withText("Text File"),
+            allOf(withId(R.id.export_html), withText("HTML File"),
                     childAtPosition(
                             childAtPosition(
                                     withId(R.id.customViewFrame),
                                     0),
-                        0), // Position in dialog
+                        2), // Position in dialog
                     isDisplayed()));
     }
 
@@ -49,19 +49,8 @@ public class ExportTextTest extends ExportTestBase {
         // Read file content
         byte[] data = Files.readAllBytes(file.toPath());
         String exportedNote = new String(data);
-        String[] lines = exportedNote.split("\n");
-        String[] content_lines = NOTE_CONTENT.split("\n");
-        //exportTempFile.delete();
 
-        // Test content
-        assertEquals(NOTE_TITLE, lines[0]);
-        assertEquals(content_lines[0], lines[3]);
-        assertEquals(content_lines[1], lines[4]);
-
-        // Last line should contain a timestamp
-        Context context = BaseAndroidTestCase.testContext;
-        String timeStamp = lines[lines.length-1];
-        assertTrue(timeStamp.contains(context.getString(R.string.last_update)));
-        assertTrue(timeStamp.contains(context.getString(R.string.creation)));
+        assertTrue(exportedNote.startsWith("<!DOCTYPE html>"));
+        assertTrue(exportedNote.contains(NOTE_TITLE));
     }
 }
