@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,8 +13,10 @@ import java.lang.ref.WeakReference;
 
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.export.Exporter;
+import it.feio.android.omninotes.export.ExporterException;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.listeners.OnNoteExported;
+import it.feio.android.omninotes.utils.Constants;
 
 /**
  * Exports a note.
@@ -62,7 +65,11 @@ public class ExportNoteTask extends AsyncTask<Note, Void, Boolean> {
                 exporter.export(note, fos);
             }
             result = true;
+        } catch (ExporterException e) {
+            Log.d(Constants.TAG, "Export: Exporter failed: " + e.getMessage());
+            // "result" will be false
         } catch (FileNotFoundException e) {
+            Log.d(Constants.TAG, "Export: FileNotFoundException");
             // "result" will be false
         } finally {
             try {
