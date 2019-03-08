@@ -1,7 +1,6 @@
 package it.feio.android.omninotes;
 
 
-import android.content.Context;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -18,6 +17,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+/**
+ * Exports a note to a HTML file. The test checks to make sure the file is a html file and that
+ * it contains the note title.
+ */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ExportHtmlTest extends ExportTestBase {

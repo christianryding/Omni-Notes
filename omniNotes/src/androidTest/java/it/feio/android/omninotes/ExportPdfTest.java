@@ -17,6 +17,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+/**
+ * Exports a note to a PDF file. Because PDF is a binary format it's not possible to test that it
+ * contains the note, because of that it only checks the PDF header magic number.
+ */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ExportPdfTest extends ExportTestBase {

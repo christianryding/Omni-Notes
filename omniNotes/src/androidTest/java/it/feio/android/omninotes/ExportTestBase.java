@@ -46,8 +46,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
 /**
- * This test creates a note and exports it to a text file then checks to make sure it was exported
- * as expected.
+ * Base UI test class for a exporting a note to a file. The file format is specified in the sub
+ * classes: ExportTextTest, ExportHtmlTest and ExportPdfTest.
  */
 public abstract class ExportTestBase extends BaseAndroidTestCase {
     protected final static String NOTE_TITLE = "Test Note";
@@ -57,6 +57,32 @@ public abstract class ExportTestBase extends BaseAndroidTestCase {
 
     @Rule
     public IntentsTestRule<MainActivity> intentsTestRule = new IntentsTestRule<>(MainActivity.class);
+
+    /**
+     * @return File extension of the file to be exported.
+     */
+    abstract String getExtension();
+
+    /**
+     * @return MIME type of the file to be exported.
+     */
+    abstract String getMime();
+
+    /**
+     * To export a file the user has to choose the file format in a dialog. This is called
+     * when the test needs to choose that format.
+     * @return
+     */
+    abstract ViewInteraction getFormatViewInteraction();
+
+    /**
+     * This is called when the test needs to check the file content of the resulting file.
+     * @param file The file to check
+     * @throws IOException
+     */
+    abstract void testFileContent(File file) throws IOException;
+
+
 
     @Before
     @Override
@@ -70,7 +96,6 @@ public abstract class ExportTestBase extends BaseAndroidTestCase {
     public void tearDown() throws Exception {
         super.tearDown();
     }
-
 
 
     /**
@@ -194,9 +219,4 @@ public abstract class ExportTestBase extends BaseAndroidTestCase {
             }
         };
     }
-
-    abstract String getExtension();
-    abstract String getMime();
-    abstract ViewInteraction getFormatViewInteraction();
-    abstract void testFileContent(File file) throws IOException;
 }

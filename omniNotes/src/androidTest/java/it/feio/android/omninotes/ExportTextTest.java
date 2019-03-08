@@ -18,6 +18,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+/**
+ * Exports a note to a text file. The resulting file is search for the note content, title and
+ * time stamp.
+ */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ExportTextTest extends ExportTestBase {
@@ -51,7 +55,6 @@ public class ExportTextTest extends ExportTestBase {
         String exportedNote = new String(data);
         String[] lines = exportedNote.split("\n");
         String[] content_lines = NOTE_CONTENT.split("\n");
-        //exportTempFile.delete();
 
         // Test content
         assertEquals(NOTE_TITLE, lines[0]);
