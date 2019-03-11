@@ -225,6 +225,18 @@
     <string name="info">Info</string>
     <string name="completed">Completed</string>
     <string name="contact">Contact</string>
+    <string name="export">Export</string>
+    <string name="export_text">Text File</string>
+    <string name="export_html">HTML File</string>
+    <string name="export_pdf">PDF File</string>
+    <string name="attachments_title">Attachments</string>
+    <string name="reminder_label">Reminder</string>
+    <string name="contacts_label">Contacts</string>
+    <string name="name_label">Name</string>
+    <string name="phonenumber_label">Phonenumber</string>
+    <string name="email_label">Email address</string>
+    <string name="note_exported">Note exported</string>
+    <string name="note_not_exported">"Couldn't export note!</string>
 
     <!-- Settings -->
     <string name="dashclock_description">Displays some statistics and expiring reminders from Omni Notes</string>

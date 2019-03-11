@@ -110,9 +110,12 @@ import it.feio.android.omninotes.async.AttachmentTask;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
 import it.feio.android.omninotes.async.bus.PushbulletReplyEvent;
 import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
+import it.feio.android.omninotes.async.notes.ExportNoteTask;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.async.notes.SaveNoteTask;
 import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.export.Exporter;
+import it.feio.android.omninotes.export.ExporterFactory;
 import it.feio.android.omninotes.helpers.AttachmentsHelper;
 import it.feio.android.omninotes.helpers.PermissionsHelper;
 import it.feio.android.omninotes.helpers.date.DateHelper;
@@ -126,6 +129,7 @@ import it.feio.android.omninotes.models.adapters.NavDrawerCategoryAdapter;
 import it.feio.android.omninotes.models.adapters.PlacesAutoCompleteAdapter;
 import it.feio.android.omninotes.models.listeners.OnAttachingFileListener;
 import it.feio.android.omninotes.models.listeners.OnGeoUtilResultListener;
+import it.feio.android.omninotes.models.listeners.OnNoteExported;
 import it.feio.android.omninotes.models.listeners.OnNoteSaved;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
@@ -167,6 +171,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
 	private static final int PICK_CONTACT = 8;
+	private static final int EXPORT_TEXT = 8;
+	private static final int EXPORT_PDF = 9;
+	private static final int EXPORT_HTML = 10;
 	private static final int RC_READ_EXTERNAL_STORAGE_PERMISSION = 1;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
@@ -214,6 +221,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private Uri attachmentUri;
 	private AttachmentAdapter mAttachmentAdapter;
 	private MaterialDialog attachmentDialog;
+	private MaterialDialog exportDialog = null;
 	private Note note;
 	private Note noteTmp;
 	private Note noteOriginal;
@@ -1039,6 +1047,13 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			menu.findItem(R.id.menu_unarchive).setVisible(!newNote && noteTmp.isArchived());
 			menu.findItem(R.id.menu_trash).setVisible(!newNote);
 		}
+
+		// Only show export if the note actually contains something to export.
+		if (isNoteEmpty()) {
+			menu.findItem(R.id.menu_export).setVisible(false);
+		} else {
+			menu.findItem(R.id.menu_export).setVisible(true);
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -1107,6 +1122,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				break;
 			case R.id.menu_add_shortcut:
 				addShortcut();
+				break;
+			case R.id.menu_export:
+				showExportPopup();
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -1475,6 +1493,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				case DETAIL:
 					mainActivity.showMessage(R.string.note_updated, ONStyle.CONFIRM);
 					break;
+				case EXPORT_TEXT:
+				case EXPORT_HTML:
+				case EXPORT_PDF:
+					onActivityResultManageExportWrite(intent, requestCode);
+					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + requestCode);
 			}
@@ -1523,6 +1546,135 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 		} else {
 			goHome();
 		}
+	}
+
+	/**
+	 * Shows a dialog that lets the user select what format to export to. The not will then be exported
+	 * to the select format.
+	 */
+	private void showExportPopup() {
+		// Don't export an empty note
+		if (isNoteEmpty()) {
+			return;
+		}
+
+		LayoutInflater inflater = mainActivity.getLayoutInflater();
+		final View layout = inflater.inflate(R.layout.export_dialog, null);
+
+		exportDialog = new MaterialDialog.Builder(mainActivity)
+				.autoDismiss(false)
+				.customView(layout, false)
+				.build();
+		exportDialog.show();
+
+		// Text
+		final android.widget.TextView textText = layout.findViewById(R.id.export_text);
+		textText.setOnClickListener(v -> handleExportPopupResult(EXPORT_TEXT));
+		// Html
+		final android.widget.TextView htmlText = layout.findViewById(R.id.export_html);
+		htmlText.setOnClickListener(v -> handleExportPopupResult(EXPORT_HTML));
+		// Pdf
+		final android.widget.TextView pdfText = layout.findViewById(R.id.export_pdf);
+		pdfText.setOnClickListener(v -> handleExportPopupResult(EXPORT_PDF));
+	}
+
+
+	/**
+	 * Handles result from Intent.ACTION_CREATE_DOCUMENT started in exportNote().
+	 * @param intent
+	 * @param requestCode
+	 */
+	private void onActivityResultManageExportWrite(Intent intent, int requestCode) {
+		if (intent == null) {
+			Log.d(Constants.TAG, "Export: intent was null.");
+			return;
+		}
+
+		final Uri uri = intent.getData();
+		if (uri == null) {
+			Log.d(Constants.TAG, "Export: getData returned null");
+			return;
+		}
+
+		// Decide what export to use
+		Exporter exporter;
+		switch(requestCode) {
+			case EXPORT_TEXT:
+				exporter = ExporterFactory.createTextExporter();
+				break;
+			case EXPORT_HTML:
+				exporter = ExporterFactory.createHtmlExporter();
+				break;
+			case EXPORT_PDF:
+				exporter = ExporterFactory.createPdfExporter();
+				break;
+			default:
+				Log.d(Constants.TAG, "Export: Wrong export request code.");
+				return;
+		}
+
+		final OnNoteExported onNoteExported = exportedOk -> {
+			if (exportedOk) {
+				mainActivity.showToast(getString(R.string.note_exported), Toast.LENGTH_LONG);
+			} else {
+				mainActivity.showToast(getString(R.string.note_not_exported), Toast.LENGTH_LONG);
+			}
+		};
+
+		final OnNoteSaved onNoteSaved = note ->
+			new ExportNoteTask(onNoteExported, exporter, uri).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
+
+		// The note was probably saved when the file picker intent was launched, but check to be sure.
+		if (saveNotNeeded()) {
+			// Nothing is changed so export without saving
+			onNoteSaved.onNoteSaved(note);
+		} else {
+			// Save the note first, then continue with the export.
+			performSaveNote(onNoteSaved);
+		 }
+	}
+
+	/**
+	 * Handles selection done at the export popup dialog.
+	 * @param exportType One of: EXPORT_TEXT, EXPORT_PDF or EXPORT_HTML
+	 */
+	@SuppressLint("NewApi")
+	private void handleExportPopupResult(int exportType) {
+		String extension;
+		String mime;
+
+		switch (exportType) {
+			case EXPORT_TEXT:
+				extension = ".txt";
+				mime = "text/plain";
+				break;
+			case EXPORT_PDF:
+				extension = ".pdf";
+				mime = "application/pdf";
+				break;
+			case EXPORT_HTML:
+				extension = ".html";
+				mime = "text/html";
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid export format");
+		}
+
+		// Construct a file name
+		String fileName = getNoteTitle();
+		if (fileName.isEmpty()) {
+			fileName = "untitled";
+		}
+		fileName += extension;
+
+		// Intent for selecting a file
+		Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		intent.setType(mime);
+		intent.putExtra(Intent.EXTRA_TITLE, fileName);
+		startActivityForResult(intent, exportType);
+
+		exportDialog.dismiss();
 	}
 
 	@SuppressLint("NewApi")
@@ -1589,14 +1741,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	 * Save new notes, modify them or archive
 	 */
 	void saveNote(OnNoteSaved mOnNoteSaved) {
-
-		// Changed fields
-		noteTmp.setTitle(getNoteTitle());
-		noteTmp.setContent(getNoteContent());
-
 		// Check if some text or attachments of any type have been inserted or is an empty note
-		if (goBack && TextUtils.isEmpty(noteTmp.getTitle()) && TextUtils.isEmpty(noteTmp.getContent())
-				&& noteTmp.getAttachmentsList().size() == 0) {
+		if (goBack && isNoteEmpty()) {
 			Log.d(Constants.TAG, "Empty note not saved");
 			exitMessage = getString(R.string.empty_note_not_saved);
 			exitCroutonStyle = ONStyle.INFO;
@@ -1612,6 +1758,13 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			return;
 		}
 
+		performSaveNote(mOnNoteSaved);
+	}
+
+	private void performSaveNote(OnNoteSaved mOnNoteSaved) {
+		// Changed fields
+		noteTmp.setTitle(getNoteTitle());
+		noteTmp.setContent(getNoteContent());
 		noteTmp.setAttachmentsListOld(note.getAttachmentsList());
 
 		new SaveNoteTask(mOnNoteSaved, lastModificationUpdatedNeeded()).executeOnExecutor(AsyncTask
@@ -1619,9 +1772,22 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	}
 
 	/**
+	 * @return true if note is empty, otherwise false.
+	 */
+	private boolean isNoteEmpty() {
+		return TextUtils.isEmpty(getNoteTitle())
+				&& TextUtils.isEmpty(getNoteContent())
+				&& noteTmp.getAttachmentsList().size() == 0;
+	}
+
+	/**
 	 * Checks if nothing is changed to avoid committing if possible (check)
 	 */
 	private boolean saveNotNeeded() {
+		// Changed fields
+		noteTmp.setTitle(getNoteTitle());
+		noteTmp.setContent(getNoteContent());
+
 		if (noteTmp.get_id() == null && prefs.getBoolean(Constants.PREF_AUTO_LOCATION, false)) {
 			note.setLatitude(noteTmp.getLatitude());
 			note.setLongitude(noteTmp.getLongitude());

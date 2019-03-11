@@ -44,11 +44,13 @@ public class ContactHelper {
      */
     public static List<ContactHelper> getAllContacts(Note note, Context context) {
         ArrayList<ContactHelper> helpers = new ArrayList<>();
+
         for (Attachment attachment: note.getAttachmentsList()) {
             if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
                 helpers.add(new ContactHelper(attachment, context));
             }
         }
+
         return helpers;
     }
 
@@ -58,7 +60,6 @@ public class ContactHelper {
      * @return Display name of contact
      */
     public String getName(){
-
         return contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
     }
 
@@ -69,6 +70,7 @@ public class ContactHelper {
      * @return List of contacts, that holds contacts phone numbers and their types
      */
     public List<Contact> getPhoneNumbers() {
+
         List<Contact> contactPhoneInfo = new ArrayList<>();
 
         if (contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("1")) {
@@ -189,4 +191,4 @@ public class ContactHelper {
             return data;
         }
     }
-}
+} 

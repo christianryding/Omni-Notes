@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/export_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableStart="@drawable/ic_export_txt_48dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/horizontal_margin"
+        android:paddingEnd="@dimen/horizontal_margin"
+        android:text="@string/export_text"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/export_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableStart="@drawable/ic_export_pdf_48dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/horizontal_margin"
+        android:paddingEnd="@dimen/horizontal_margin"
+        android:text="@string/export_pdf"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/export_html"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableStart="@drawable/ic_export_html_48dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/horizontal_margin"
+        android:paddingEnd="@dimen/horizontal_margin"
+        android:text="@string/export_html"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+</LinearLayout>
