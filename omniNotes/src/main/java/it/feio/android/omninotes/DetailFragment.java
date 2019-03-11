@@ -171,9 +171,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
 	private static final int PICK_CONTACT = 8;
-	private static final int EXPORT_TEXT = 8;
-	private static final int EXPORT_PDF = 9;
-	private static final int EXPORT_HTML = 10;
+	private static final int EXPORT_TEXT = 9;
+	private static final int EXPORT_PDF = 10;
+	private static final int EXPORT_HTML = 11;
 	private static final int RC_READ_EXTERNAL_STORAGE_PERMISSION = 1;
 	public OnDateSetListener onDateSetListener;
 	public OnTimeSetListener onTimeSetListener;
