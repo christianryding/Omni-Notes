@@ -171,6 +171,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
 	private static final int PICK_CONTACT = 8;
+	private static final int EXPORT = 12;
 	private static final int EXPORT_TEXT = 9;
 	private static final int EXPORT_PDF = 10;
 	private static final int EXPORT_HTML = 11;
@@ -1124,7 +1125,12 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				addShortcut();
 				break;
 			case R.id.menu_export:
-				showExportPopup();
+				if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
+						PackageManager.PERMISSION_GRANTED) {
+					showExportPopup();
+				} else {
+					askReadContactsPermission(EXPORT);
+				}
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -2360,10 +2366,18 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				snackBarPlaceholder, this::startGetContentAction);
 	}
 
-	private void askReadContactsPermission() {
-		PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
-				R.string.permission_contact_attachment,
-				snackBarPlaceholder, this::chooseContact);
+	private void askReadContactsPermission(int function) {
+
+		if(function == PICK_CONTACT){
+			PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
+					R.string.permission_contact_attachment,
+					snackBarPlaceholder, this::chooseContact);
+		}
+		else if(function == EXPORT){
+			PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
+					R.string.permission_contact_attachment,
+					snackBarPlaceholder, this::showExportPopup);
+		}
 	}
 
 	public void onEventMainThread(PushbulletReplyEvent pushbulletReplyEvent) {
@@ -2526,7 +2540,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 							PackageManager.PERMISSION_GRANTED) {
 						chooseContact();
 					} else {
-						askReadContactsPermission();
+						askReadContactsPermission(PICK_CONTACT);
 					}
 					break;
 				default:
