@@ -84,6 +84,8 @@ import com.neopixl.pixlui.components.edittext.EditText;
 import com.neopixl.pixlui.components.textview.TextView;
 import com.pushbullet.android.extension.MessagingExtension;
 
+import net.fortuna.ical4j.model.property.Attach;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -171,7 +173,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 	private static final int DETAIL = 6;
 	private static final int FILES = 7;
 	private static final int PICK_CONTACT = 8;
-	private static final int EXPORT = 12;
 	private static final int EXPORT_TEXT = 9;
 	private static final int EXPORT_PDF = 10;
 	private static final int EXPORT_HTML = 11;
@@ -261,45 +262,45 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					.negativeColorRes(R.color.colorPrimary)
 					.positiveText(R.string.open)
 					.negativeText(R.string.copy)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            boolean error = false;
-                            Intent intent = null;
-                            try {
-                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            } catch (NullPointerException e) {
-                                error = true;
-                            }
+					.onPositive(new MaterialDialog.SingleButtonCallback() {
+						@Override
+						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+							boolean error = false;
+							Intent intent = null;
+							try {
+								intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+								intent.addCategory(Intent.CATEGORY_BROWSABLE);
+								intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							} catch (NullPointerException e) {
+								error = true;
+							}
 
-                            if (intent == null
-                                    || error
-                                    || !IntentChecker
-                                    .isAvailable(
-                                            mainActivity,
-                                            intent,
-                                            new String[]{PackageManager.FEATURE_CAMERA})) {
-                                mainActivity.showMessage(R.string.no_application_can_perform_this_action,
-                                        ONStyle.ALERT);
+							if (intent == null
+									|| error
+									|| !IntentChecker
+									.isAvailable(
+											mainActivity,
+											intent,
+											new String[]{PackageManager.FEATURE_CAMERA})) {
+								mainActivity.showMessage(R.string.no_application_can_perform_this_action,
+										ONStyle.ALERT);
 
-                            } else {
-                                startActivity(intent);
-                            }
-                        }
-                    })
-                    .onNegative(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
-                                    mainActivity
-                                            .getSystemService(Activity.CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.newPlainText("text label",
-                                    clickedString);
-                            clipboard.setPrimaryClip(clip);
-                        }
-                    }).build().show();
+							} else {
+								startActivity(intent);
+							}
+						}
+					})
+					.onNegative(new MaterialDialog.SingleButtonCallback() {
+						@Override
+						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+							android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+									mainActivity
+											.getSystemService(Activity.CLIPBOARD_SERVICE);
+							android.content.ClipData clip = android.content.ClipData.newPlainText("text label",
+									clickedString);
+							clipboard.setPrimaryClip(clip);
+						}
+					}).build().show();
 			View clickedView = noteTmp.isChecklist() ? toggleChecklistView : content;
 			clickedView.clearFocus();
 			KeyboardUtils.hideKeyboard(clickedView);
@@ -592,7 +593,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			}
 		} else {
 			ArrayList<Uri> uris = i.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-			for (Uri uriSingle :uris) {
+			for (Uri uriSingle : uris) {
 				String name = FileHelper.getNameFromUri(mainActivity, uriSingle);
 				new AttachmentTask(this, uriSingle, name, this).execute();
 			}
@@ -658,16 +659,16 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			MaterialDialog dialog = new MaterialDialog.Builder(mainActivity)
 					.content(R.string.remove_reminder)
 					.positiveText(R.string.ok)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(
-                                @NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            ReminderHelper.removeReminder(OmniNotes.getAppContext(), noteTmp);
-                            noteTmp.setAlarm(null);
-                            reminderIcon.setImageResource(R.drawable.ic_alarm_black_18dp);
-                            datetime.setText("");
-                        }
-                    }).build();
+					.onPositive(new MaterialDialog.SingleButtonCallback() {
+						@Override
+						public void onClick(
+								@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+							ReminderHelper.removeReminder(OmniNotes.getAppContext(), noteTmp);
+							noteTmp.setAlarm(null);
+							reminderIcon.setImageResource(R.drawable.ic_alarm_black_18dp);
+							datetime.setText("");
+						}
+					}).build();
 			dialog.show();
 			return true;
 		});
@@ -715,13 +716,13 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			builder.content(R.string.remove_location);
 			builder.positiveText(R.string.ok);
 			builder.onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    noteTmp.setLatitude("");
-                    noteTmp.setLongitude("");
-                    fade(locationTextView, false);
-                }
-            });
+				@Override
+				public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+					noteTmp.setLatitude("");
+					noteTmp.setLongitude("");
+					fade(locationTextView, false);
+				}
+			});
 			MaterialDialog dialog = builder.build();
 			dialog.show();
 			return true;
@@ -773,22 +774,22 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				// Media files will be opened in internal gallery
 			}
 			// When contact attachment is clicked, open contact information
-			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) ) {
+			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
 				Uri contactData = attachment.getUri();
 				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
 				cursor.moveToFirst();
 				long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 				String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 				Intent contactIntent = new Intent(Intent.ACTION_VIEW);
-				contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
+				contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id,lookupKey));
 				cursor.close();
-
 				try {
 					getContext().startActivity(contactIntent);
-				} catch (Exception e) {
+				} catch(
+						Exception e){
 					Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
 				}
-			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
+			} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
 				// Title
@@ -1125,12 +1126,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				addShortcut();
 				break;
 			case R.id.menu_export:
-				if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) ==
-						PackageManager.PERMISSION_GRANTED) {
-					showExportPopup();
-				} else {
-					askReadContactsPermission(EXPORT);
-				}
+				showExportPopup();
 				break;
 			case R.id.menu_archive:
 				archiveNote(true);
@@ -2373,10 +2369,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					R.string.permission_contact_attachment,
 					snackBarPlaceholder, this::chooseContact);
 		}
-		else if(function == EXPORT){
-			PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
-					R.string.permission_contact_attachment,
-					snackBarPlaceholder, this::showExportPopup);
+		else{
+			Log.e(Constants.TAG_CONTACT, "Could not retrieve read permissions");
 		}
 	}
 
