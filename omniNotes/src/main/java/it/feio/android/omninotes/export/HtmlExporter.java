@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 /**
  * Exports a note to a HTML file. Doesn't export images.
  */
-@SuppressWarnings("squid:S1192") // Hide warnings about duplicates in the HTML template
+@SuppressWarnings("squid:S1192") // Hide SonarLint warnings about duplicates in the HTML template
 public class HtmlExporter extends ExporterBase {
     /**
      * Overall structure of the resulting HTML file. Strings that starts with $ will be replaced
