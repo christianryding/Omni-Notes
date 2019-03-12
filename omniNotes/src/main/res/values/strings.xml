@@ -441,6 +441,6 @@
     <string name="channel_reminders_description">Notifications for notes\' reminders</string>
 
     <!-- Log error message -->
-    <string name="wrong_element_choosen">Wrong element choosen: </string>
+    <string name="wrong_element_choosen">Wrong element chosen: </string>
 
 </resources>

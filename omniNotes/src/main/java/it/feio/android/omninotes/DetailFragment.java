@@ -2367,16 +2367,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				snackBarPlaceholder, this::startGetContentAction);
 	}
 
-	private void askReadContactsPermission(int function) {
+	private void askReadContactsPermission() {
 
-		if(function == PICK_CONTACT){
-			PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
+		PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
 					R.string.permission_contact_attachment,
 					snackBarPlaceholder, this::chooseContact);
-		}
-		else{
-			Log.e(Constants.TAG_CONTACT, "Could not retrieve read permissions");
-		}
 	}
 
 	public void onEventMainThread(PushbulletReplyEvent pushbulletReplyEvent) {
@@ -2539,7 +2534,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 							PackageManager.PERMISSION_GRANTED) {
 						chooseContact();
 					} else {
-						askReadContactsPermission(PICK_CONTACT);
+						askReadContactsPermission();
 					}
 					break;
 				default:
