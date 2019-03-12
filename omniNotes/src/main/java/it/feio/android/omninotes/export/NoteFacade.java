@@ -127,7 +127,7 @@ public class NoteFacade {
      * @return category name.
      * @throws IllegalStateException if <code>hasCategory</code> returns false.
      */
-    public String getCategoryName() throws IllegalStateException {
+    public String getCategoryName() {
         if (!hasCategory()) {
             throw new IllegalStateException("Note has no category!");
         }
@@ -138,7 +138,7 @@ public class NoteFacade {
      * @return category color as a HTML hex color value.
      * @throws IllegalStateException if <code>hasCategory</code> returns false.
      */
-    public String getCategoryColor() throws IllegalStateException {
+    public String getCategoryColor() {
         if (!hasCategory()) {
             throw new IllegalStateException("Note has no category!");
         }
@@ -160,7 +160,7 @@ public class NoteFacade {
      * @throws IllegalStateException If this note is a checklist, <code>isNoteChecklist</code>
      * returns true in that case.
      */
-    public String getTextContent() throws IllegalStateException {
+    public String getTextContent() {
         if (isNoteChecklist()) {
             throw new IllegalStateException("Note is a checklist!");
         } else {
@@ -173,7 +173,7 @@ public class NoteFacade {
      * @return list of items.
      * @throws IllegalStateException if isNoteChecklist returns false.
      */
-    public List<ChecklistItem> getChecklist() throws IllegalStateException {
+    public List<ChecklistItem> getChecklist() {
         if (!isNoteChecklist()) {
             throw new IllegalStateException("Note is not a checklist!");
         }
@@ -207,7 +207,7 @@ public class NoteFacade {
      * TODO: Does a note with a location always have an address? What about longitude/latitude?
      * @return The address attached to the note.
      */
-    public String getLocation() throws IllegalStateException {
+    public String getLocation() {
         if (!hasLocation()) {
             throw new IllegalStateException("Note doesn't have a location");
         }
@@ -253,7 +253,7 @@ public class NoteFacade {
      * @return a list with contacts.
      * @throws IllegalStateException if <code>hasContacts</code> returns false.
      */
-    public List<Contact> getContacts() throws IllegalStateException {
+    public List<Contact> getContacts() {
         if (!hasContacts()) {
             throw new IllegalStateException("Note doesn't have any contacts");
         }

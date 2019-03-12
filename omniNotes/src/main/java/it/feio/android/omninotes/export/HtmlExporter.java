@@ -8,12 +8,13 @@ import java.io.PrintWriter;
 /**
  * Exports a note to a HTML file. Doesn't export images.
  */
+@SuppressWarnings("squid:S1192") // Hide warnings about duplicates in the HTML template
 public class HtmlExporter extends ExporterBase {
     /**
      * Overall structure of the resulting HTML file. Strings that starts with $ will be replaced
      * by information from the note, this applies to all template strings arrays.
      */
-    private final static String[] HTML_TEMPLATE = {
+    private static final String[] HTML_TEMPLATE = {
             "<!DOCTYPE html>",
             "<html lang=\"en\">",
             "<head>",
@@ -90,7 +91,7 @@ public class HtmlExporter extends ExporterBase {
     /**
      * "Content" part of a note, this will contain actual text of a note.
      */
-    private final static String[] TEXT_CONTENT_TEMPLATE = {
+    private static final String[] TEXT_CONTENT_TEMPLATE = {
             "<section class=\"content\">",
             "$TEXT",
             "</section>"
@@ -99,7 +100,7 @@ public class HtmlExporter extends ExporterBase {
     /**
      * Used instead of <code>TEXT_CONTENT_TEMPLATE</code> if the note is a checklist.
      */
-    private final static String[] CHECKLIST_CONTENT_TEMPLATE = {
+    private static final String[] CHECKLIST_CONTENT_TEMPLATE = {
             "<section class=\"content\">",
             "<ul>",
             "$CHECKLIST_ITEMS",
@@ -110,21 +111,21 @@ public class HtmlExporter extends ExporterBase {
     /**
      * A checked item in the checklist.
      */
-    private final static String[] CHECKED_ITEM_TEMPLATE = {
+    private static final String[] CHECKED_ITEM_TEMPLATE = {
             "<li>☑ ", "$TEXT", "</li>",
     };
 
     /**
      * An unchecked item in the checklist.
      */
-    private final static String[] UNCHECKED_ITEM_TEMPLATE = {
+    private static final String[] UNCHECKED_ITEM_TEMPLATE = {
             "<li>☐ ", "$TEXT", "</li>",
     };
 
     /**
      * Attachments section
      */
-    private final static String[] ATTACHMENTS_TEMPLATE = {
+    private static final String[] ATTACHMENTS_TEMPLATE = {
             "<section class=\"attachments\">",
             "<h2>", "$ATTACHMENTS_TITLE", "</h2>",
             "$ATTACHMENT_LIST",
@@ -134,7 +135,7 @@ public class HtmlExporter extends ExporterBase {
     /**
      * Location attachment
      */
-    private final static String[] LOCATION_TEMPLATE = {
+    private static final String[] LOCATION_TEMPLATE = {
             "<h3>", "$LOCATION_TITLE", "</h3>",
             "<p>", "$LOCATION", "</p>"
     };
@@ -142,7 +143,7 @@ public class HtmlExporter extends ExporterBase {
     /**
      * Reminder attachment
      */
-    private final static String[] REMINDER_TEMPLATE = {
+    private static final String[] REMINDER_TEMPLATE = {
             "<h3>", "$REMINDER_TITLE", "</h3>",
             "<p>", "$REMINDER", "</p>"
     };
@@ -150,7 +151,7 @@ public class HtmlExporter extends ExporterBase {
     /**
      * Contacts attachment
      */
-    private final static String[] CONTACTS_TEMPLATE = {
+    private static final String[] CONTACTS_TEMPLATE = {
             "<h3>", "$CONTACTS_TITLE", "</h3>",
             "$CONTACT_ITEMS",
     };
@@ -159,7 +160,7 @@ public class HtmlExporter extends ExporterBase {
      * A contact entry of t he contacts section. Contains name, phone number and email address of a
      * contact.
      */
-    private final static String[] CONTACT_ITEM_TEMPLATE = {
+    private static final String[] CONTACT_ITEM_TEMPLATE = {
             "<table class=\"contacts\">",
             "    <tr>",
             "        <td>", "$NAME_LABEL", "</td>",
@@ -187,7 +188,7 @@ public class HtmlExporter extends ExporterBase {
 
 
     @Override
-    protected void createDocument(NoteFacade facade) throws ExporterException {
+    protected void createDocument(NoteFacade facade) {
         this.facade = facade;
 
         document =
@@ -201,7 +202,7 @@ public class HtmlExporter extends ExporterBase {
     }
 
     @Override
-    protected void writeDocument(OutputStream os) throws ExporterException {
+    protected void writeDocument(OutputStream os) {
         try (OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
              PrintWriter pw = new PrintWriter(osw))
         {

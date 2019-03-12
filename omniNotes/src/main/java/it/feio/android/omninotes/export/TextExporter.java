@@ -12,11 +12,11 @@ public class TextExporter extends ExporterBase {
     /**
      * String to be used as new line character sequence.
      */
-    private final static String NEWLINE = "\n";
+    private static final String NEWLINE = "\n";
     /**
      * Character to use for the underscore
      */
-    private final static char UNDERLINE_CHAR = '=';
+    private static final char UNDERLINE_CHAR = '=';
 
     /**
      * Contains the resulting text file content.
@@ -28,7 +28,7 @@ public class TextExporter extends ExporterBase {
     private NoteFacade facade = null;
 
     @Override
-    protected void createDocument(NoteFacade facade) throws ExporterException {
+    protected void createDocument(NoteFacade facade) {
         sb = new StringBuilder();
         this.facade = facade;
 
@@ -40,7 +40,7 @@ public class TextExporter extends ExporterBase {
 
 
     @Override
-    protected void writeDocument(OutputStream os) throws ExporterException {
+    protected void writeDocument(OutputStream os) {
         try (OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
              PrintWriter pw = new PrintWriter(osw))
         {
@@ -192,12 +192,12 @@ public class TextExporter extends ExporterBase {
      * @param longestStr Longest string of the row group
      */
     private String makeColumn(String str, int longestStr) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(str).append(": ");
+        StringBuilder colSb = new StringBuilder();
+        colSb.append(str).append(": ");
         final int spaceLen = longestStr - str.length();
         for (int i = 0; i < spaceLen; i++) {
-            sb.append(" ");
+            colSb.append(" ");
         }
-        return sb.toString();
+        return colSb.toString();
     }
 }

@@ -40,45 +40,45 @@ public class PdfExporter extends ExporterBase {
      * A4 paper width.
      * 210 / 25.4 * 72 = 595
      */
-    private final int PAPER_WIDTH = 595;
+    private static final int PAPER_WIDTH = 595;
     /**
      * A4 paper height.
      * 297 / 25.4 * 72 = 842
      */
-    private final int PAPER_HEIGHT = 842;
+    private static final int PAPER_HEIGHT = 842;
     /**
      * Left and right margin of the document.
      */
-    private final int MARGIN_X = 50;
+    private static final int MARGIN_X = 50;
     /**
      * Top and bottom margin of the document.
      */
-    private final int MARGIN_Y = 75;
+    private static final int MARGIN_Y = 75;
 
     /**
      * Title header font size
      */
-    private final int TITLE_SIZE = 24;
+    private static final int TITLE_SIZE = 24;
     /**
      * Attachments header font size
      */
-    private final int ATTACH_TITLE_SIZE = 18;
+    private static final int ATTACH_TITLE_SIZE = 18;
     /**
      * Headers in attachments section.
      */
-    private final int ATTACH_SUBTITLE_SIZE = 14;
+    private static final int ATTACH_SUBTITLE_SIZE = 14;
     /**
      * Content text size, used for all text that is not headers.
      */
-    private final int TEXT_SIZE = 12;
+    private static final int TEXT_SIZE = 12;
     /**
      * Space between lines. The spacing will be this multiplied with the text size.
      */
-    private final float LINE_SPACE = 0.3f;
+    private static final float LINE_SPACE = 0.3f;
     /**
      * Canvas scale compared to "PDF-scale"
      */
-    private final float CANVAS_SCALE = 0.2f;
+    private static final float CANVAS_SCALE = 0.2f;
 
     /**
      * Note that is exported.
@@ -136,7 +136,7 @@ public class PdfExporter extends ExporterBase {
     }
 
     @Override
-    protected void createDocument(NoteFacade facade) throws ExporterException {
+    protected void createDocument(NoteFacade facade) {
         this.facade = facade;
 
         // create a new document
@@ -164,7 +164,7 @@ public class PdfExporter extends ExporterBase {
     }
 
     @Override
-    protected void writeDocument(OutputStream os) throws ExporterException {
+    protected void writeDocument(OutputStream os) {
         try {
             document.writeTo(os);
         } catch (IOException e) {
@@ -269,7 +269,7 @@ public class PdfExporter extends ExporterBase {
             StaticLayout layout = new StaticLayout(
                     text,
                     paint,
-                    (int)toCanvasUnits(PAPER_WIDTH - MARGIN_X * 2),
+                    (int)toCanvasUnits((float)(PAPER_WIDTH - MARGIN_X * 2)),
                     Layout.Alignment.ALIGN_NORMAL,
                     1.0f,
                     3.0f,
@@ -358,7 +358,7 @@ public class PdfExporter extends ExporterBase {
 
         // Translate to the page foot
         setOriginTranslation();
-        canvas.translate(0, toCanvasUnits(PAPER_HEIGHT - MARGIN_Y * 2));
+        canvas.translate(0, toCanvasUnits((float)(PAPER_HEIGHT - MARGIN_Y * 2)));
 
         print(facade.getTimestamp(), paintText);
 

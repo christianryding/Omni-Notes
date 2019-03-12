@@ -19,5 +19,5 @@ public interface Exporter {
      * @param os    outputstream to be used.
      * @throws ExporterException if an error occurs during export.
      */
-    void export(Note note, OutputStream os) throws ExporterException;
+    void export(Note note, OutputStream os);
 }

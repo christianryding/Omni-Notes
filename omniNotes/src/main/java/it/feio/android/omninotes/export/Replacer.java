@@ -62,7 +62,7 @@ class Replacer {
      * @return the final string.
      * @throws IllegalStateException if an registered $-string is found.
      */
-    public String replace() throws IllegalStateException {
+    public String replace() {
         StringBuilder sb = new StringBuilder();
 
         for (String line : template) {

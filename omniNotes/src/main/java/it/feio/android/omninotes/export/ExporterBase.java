@@ -12,10 +12,6 @@ import it.feio.android.omninotes.models.Note;
  */
 abstract class ExporterBase implements Exporter {
     /**
-     * The note that is to be exported
-     */
-    private Note note;
-    /**
      * Context used during export
      */
     private Context context;
@@ -25,8 +21,7 @@ abstract class ExporterBase implements Exporter {
      * @param os    outputstream to be used.
      * @throws ExporterException
      */
-    final public void export(Note note, OutputStream os) throws ExporterException {
-        this.note = note;
+    public final void export(Note note, OutputStream os) {
         this.context = OmniNotes.getAppContext();
 
         final NoteFacade facade = new NoteFacade(note);
@@ -48,7 +43,7 @@ abstract class ExporterBase implements Exporter {
      * Used by exporters that needs a Context.
      * @return current context.
      */
-    final protected Context getContext() {
+    protected final Context getContext() {
         return context;
     }
 
@@ -60,7 +55,7 @@ abstract class ExporterBase implements Exporter {
      * @throws ExporterException if a document couldn't be created, in that case, writeDocument
      * will note be called.
      */
-    abstract protected void createDocument(NoteFacade facade) throws ExporterException;
+    protected abstract void createDocument(NoteFacade facade);
 
     /**
      * Handles the writing of the document to the <code>OutputStream</code>. Is called after
@@ -69,5 +64,5 @@ abstract class ExporterBase implements Exporter {
      * @param os the document will be written to this.
      * @throws ExporterException if an error occurs during export.
      */
-    abstract protected void writeDocument(OutputStream os) throws ExporterException;
+    protected abstract void writeDocument(OutputStream os);
 }

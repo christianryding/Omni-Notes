@@ -4,6 +4,10 @@ package it.feio.android.omninotes.export;
  * This class should be used by the application if an exporter instance is needed.
  */
 public class ExporterFactory {
+
+    private ExporterFactory() {
+    }
+
     /**
      * Creates an exporter that exports to a text file.
      * @return exporter instance
