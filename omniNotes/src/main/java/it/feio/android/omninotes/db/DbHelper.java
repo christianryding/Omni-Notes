@@ -1030,7 +1030,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         // Everything about attachments
         int attachmentsAll = 0, images = 0, videos = 0, audioRecordings = 0, sketches = 0, files = 0;
-        //int contacts = 0;
         List<Attachment> attachments = getAllAttachments();
         for (Attachment attachment : attachments) {
             if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())) {
@@ -1043,9 +1042,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 sketches++;
             } else if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
                 files++;
-            } //else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())){
-                //contacts++;
-            //}
+            }
         }
         mStats.setAttachments(attachmentsAll);
         mStats.setImages(images);
@@ -1053,8 +1050,6 @@ public class DbHelper extends SQLiteOpenHelper {
         mStats.setAudioRecordings(audioRecordings);
         mStats.setSketches(sketches);
         mStats.setFiles(files);
-        //mStats.setContacts(contacts);
-
         return mStats;
     }
 

@@ -20,7 +20,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -46,7 +45,7 @@ import it.feio.android.omninotes.models.views.ExpandableHeightGridView;
 import it.feio.android.omninotes.models.views.SquareImageView;
 import it.feio.android.omninotes.utils.BitmapHelper;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.ConstantsBase;
+import it.feio.android.omninotes.utils.ContactHelper;
 import it.feio.android.omninotes.utils.Fonts;
 import it.feio.android.omninotes.utils.date.DateUtils;
 
@@ -135,25 +134,13 @@ public class AttachmentAdapter extends BaseAdapter {
 
         // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
-
-            String name = "";
-            int id;
             Bitmap thumbnailBm = null;
+
             if (ContextCompat.checkSelfPermission(convertView.getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                ContactHelper contactHelper = new ContactHelper(mAttachment, convertView.getContext());
+                String name = contactHelper.getName();
+                contactHelper.close();
 
-                // Get contacts name
-                Cursor cursor = convertView.getContext().getContentResolver().query(
-                        mAttachment.getUri()
-                        , null
-                        , null
-                        , null
-                        , null);
-
-                if (cursor.moveToFirst()) {
-                    id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-                    name = cursor.getString(id);
-                }
-                cursor.close();
                 holder.text.setText(name);
                 holder.text.setVisibility(View.VISIBLE);
 
@@ -188,10 +175,7 @@ public class AttachmentAdapter extends BaseAdapter {
 //                .centerCrop()
 //                .crossFade()
                 .into(holder.image);
-
-
         }
-
         return convertView;
     }
 

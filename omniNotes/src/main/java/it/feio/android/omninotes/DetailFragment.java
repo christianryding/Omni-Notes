@@ -84,8 +84,6 @@ import com.neopixl.pixlui.components.edittext.EditText;
 import com.neopixl.pixlui.components.textview.TextView;
 import com.pushbullet.android.extension.MessagingExtension;
 
-import net.fortuna.ical4j.model.property.Attach;
-
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;

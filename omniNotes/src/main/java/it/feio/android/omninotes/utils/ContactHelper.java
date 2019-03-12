@@ -16,7 +16,6 @@ import it.feio.android.omninotes.models.Note;
  */
 public class ContactHelper {
 
-    //private Attachment contactAttachment;
     private Context context;
     private String contactID;
     private Cursor contactCursor;
@@ -28,7 +27,6 @@ public class ContactHelper {
      * @param context Context
      */
     public ContactHelper(Attachment contactAttachment, Context context){
-        //this.contactAttachment = contactAttachment;
         this.context = context;
         this.contactCursor = context.getContentResolver().query(contactAttachment.getUri(), null, null, null, null);
         contactCursor.moveToFirst();

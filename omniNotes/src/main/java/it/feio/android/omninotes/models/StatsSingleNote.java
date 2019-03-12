@@ -18,7 +18,7 @@
 
 package it.feio.android.omninotes.models;
 
-import android.util.Log;
+
 
 public class StatsSingleNote {
 
