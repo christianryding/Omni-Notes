@@ -237,6 +237,7 @@
     <string name="email_label">Email address</string>
     <string name="note_exported">Note exported</string>
     <string name="note_not_exported">"Couldn't export note!</string>
+    <string name="error_show_contact">Failed to open the contact</string>
 
     <!-- Settings -->
     <string name="dashclock_description">Displays some statistics and expiring reminders from Omni Notes</string>

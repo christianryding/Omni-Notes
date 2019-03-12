@@ -779,17 +779,21 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 					Uri contactData = attachment.getUri();
 					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
-					cursor.moveToFirst();
-					long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-					String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-					Intent contactIntent = new Intent(Intent.ACTION_VIEW);
-					contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
-					cursor.close();
-					try {
-						getContext().startActivity(contactIntent);
-					} catch (
-							Exception e) {
-						Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
+
+					if (cursor.moveToFirst()) {
+						long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+						String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+						Intent contactIntent = new Intent(Intent.ACTION_VIEW);
+						contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
+						cursor.close();
+						try {
+							getContext().startActivity(contactIntent);
+						} catch (
+								Exception e) {
+							Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
+						}
+					} else {
+						mainActivity.showToast(getString(R.string.error_show_contact), Toast.LENGTH_LONG);
 					}
 				}
 			} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
