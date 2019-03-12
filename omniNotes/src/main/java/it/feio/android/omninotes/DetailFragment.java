@@ -775,19 +775,22 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 			}
 			// When contact attachment is clicked, open contact information
 			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
-				Uri contactData = attachment.getUri();
-				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
-				cursor.moveToFirst();
-				long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-				String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-				Intent contactIntent = new Intent(Intent.ACTION_VIEW);
-				contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id,lookupKey));
-				cursor.close();
-				try {
-					getContext().startActivity(contactIntent);
-				} catch(
-						Exception e){
-					Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
+				if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+
+					Uri contactData = attachment.getUri();
+					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
+					cursor.moveToFirst();
+					long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+					String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+					Intent contactIntent = new Intent(Intent.ACTION_VIEW);
+					contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
+					cursor.close();
+					try {
+						getContext().startActivity(contactIntent);
+					} catch (
+							Exception e) {
+						Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
+					}
 				}
 			} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())

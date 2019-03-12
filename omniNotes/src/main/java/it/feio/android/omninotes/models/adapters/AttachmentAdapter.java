@@ -16,13 +16,16 @@
  */
 package it.feio.android.omninotes.models.adapters;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,38 +135,40 @@ public class AttachmentAdapter extends BaseAdapter {
 
         // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
+
             String name = "";
             int id;
             Bitmap thumbnailBm = null;
+            if (ContextCompat.checkSelfPermission(convertView.getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
 
-            // Get contacts name
-            Cursor cursor = convertView.getContext().getContentResolver().query(
-                    mAttachment.getUri()
-                    , null
-                    , null
-                    , null
-                    , null);
+                // Get contacts name
+                Cursor cursor = convertView.getContext().getContentResolver().query(
+                        mAttachment.getUri()
+                        , null
+                        , null
+                        , null
+                        , null);
 
-            if (cursor.moveToFirst()) {
-                id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-                name = cursor.getString(id);
+                if (cursor.moveToFirst()) {
+                    id = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                    name = cursor.getString(id);
+                }
+                cursor.close();
+                holder.text.setText(name);
+                holder.text.setVisibility(View.VISIBLE);
+
+                // Get contacts photo
+                try {
+                    InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
+                            convertView.getContext().getContentResolver()
+                            , mAttachment.getUri()
+                            , true);
+                    thumbnailBm = BitmapFactory.decodeStream(s);
+                    s.close();
+                } catch (Exception ioExc) {
+                    Log.e(Constants.TAG_CONTACT, "Could not retrieve thumbnail for contact");
+                }
             }
-            cursor.close();
-            holder.text.setText(name);
-            holder.text.setVisibility(View.VISIBLE);
-
-            // Get contacts photo
-            try {
-                InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
-                        convertView.getContext().getContentResolver()
-                        , mAttachment.getUri()
-                        , true);
-                thumbnailBm = BitmapFactory.decodeStream(s);
-                s.close();
-            }catch(Exception ioExc){
-                Log.e(Constants.TAG_CONTACT, "Could not retrieve thumbnail for contact");
-            }
-
             // Load contacts thumbnail picture if available
             if (thumbnailBm == null) {
                 Bitmap defaultBm = BitmapHelper.getBitmapFromAttachment(convertView.getContext(), mAttachment, 128, 128);
