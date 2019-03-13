@@ -2,8 +2,13 @@ package it.feio.android.omninotes.utils;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
+import android.util.Log;
+import android.view.View;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +66,29 @@ public class ContactHelper {
         return contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
     }
 
+
+    /**
+     * Return contacts photo if available
+     *
+     * @param mAttachment contact
+     * @param convertView view
+     * @return contacts photo or null
+     */
+    public Bitmap getContactPhoto(Attachment mAttachment, View convertView){
+
+        Bitmap thumbnailBm = null;
+        try {
+            InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
+                    convertView.getContext().getContentResolver()
+                    , mAttachment.getUri()
+                    , true);
+            thumbnailBm = BitmapFactory.decodeStream(s);
+            s.close();
+        } catch (Exception ioExc) {
+            Log.e(Constants.TAG_CONTACT, "Could not retrieve thumbnail for contact");
+        }
+        return thumbnailBm;
+    }
 
     /**
      * Get contacts phone numbers
@@ -167,11 +195,14 @@ public class ContactHelper {
      */
     public class Contact{
 
-        String data = "";
-        String type = "";
+        String data;
+        String type;
 
         // Constructor
-        public Contact(){        }
+        public Contact(){
+            this.data = "";
+            this.type = "";
+        }
 
         // Setters
         public void setData(String data) {

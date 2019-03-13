@@ -772,29 +772,29 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				// Media files will be opened in internal gallery
 			}
 			// When contact attachment is clicked, open contact information
-			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type())) {
-				if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+			else if (Constants.MIME_TYPE_CONTACT.equals(attachment.getMime_type()) &&
+					ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
 
-					Uri contactData = attachment.getUri();
-					Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
+			    Uri contactData = attachment.getUri();
+				Cursor cursor = getContext().getContentResolver().query(contactData, null, null, null, null);
 
-					if (cursor.moveToFirst()) {
-						long contact_id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-						String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-						Intent contactIntent = new Intent(Intent.ACTION_VIEW);
-						contactIntent.setData(ContactsContract.Contacts.getLookupUri(contact_id, lookupKey));
-						cursor.close();
-						try {
-							getContext().startActivity(contactIntent);
-						} catch (
-								Exception e) {
-							Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
-						}
-					} else {
-						mainActivity.showToast(getString(R.string.error_show_contact), Toast.LENGTH_LONG);
+				if (cursor.moveToFirst()) {
+					long contactID = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+					String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+					Intent contactIntent = new Intent(Intent.ACTION_VIEW);
+					contactIntent.setData(ContactsContract.Contacts.getLookupUri(contactID, lookupKey));
+					cursor.close();
+					try {
+						getContext().startActivity(contactIntent);
+					} catch (
+							Exception e) {
+						Log.e(Constants.TAG_CONTACT, "Could not show attached contact");
 					}
+				} else {
+					mainActivity.showToast(getString(R.string.error_show_contact), Toast.LENGTH_LONG);
 				}
-			} else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
+
+			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
 				// Title
@@ -1506,7 +1506,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					onActivityResultManageExportWrite(intent, requestCode);
 					break;
 				default:
-					Log.e(Constants.TAG, "Wrong element choosen: " + requestCode);
+					Log.e(Constants.TAG, getString(R.string.wrong_element_choosen) + requestCode);
 			}
 		}
 	}
@@ -2151,7 +2151,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 				break;
 
 			default:
-				Log.e(Constants.TAG, "Wrong element choosen: " + event.getAction());
+				Log.e(Constants.TAG, getString(R.string.wrong_element_choosen) + event.getAction());
 		}
 
 		return true;
@@ -2538,7 +2538,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					}
 					break;
 				default:
-					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
+					Log.e(Constants.TAG, getString(R.string.wrong_element_choosen) + v.getId());
 			}
 			if (!isRecording) attachmentDialog.dismiss();
 		}

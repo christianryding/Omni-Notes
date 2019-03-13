@@ -21,9 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +32,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -134,28 +131,20 @@ public class AttachmentAdapter extends BaseAdapter {
 
         // Set contacts information
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
+
             Bitmap thumbnailBm = null;
 
             if (ContextCompat.checkSelfPermission(convertView.getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 ContactHelper contactHelper = new ContactHelper(mAttachment, convertView.getContext());
                 String name = contactHelper.getName();
-                contactHelper.close();
+                thumbnailBm = contactHelper.getContactPhoto(mAttachment,convertView);
 
                 holder.text.setText(name);
                 holder.text.setVisibility(View.VISIBLE);
 
-                // Get contacts photo
-                try {
-                    InputStream s = ContactsContract.Contacts.openContactPhotoInputStream(
-                            convertView.getContext().getContentResolver()
-                            , mAttachment.getUri()
-                            , true);
-                    thumbnailBm = BitmapFactory.decodeStream(s);
-                    s.close();
-                } catch (Exception ioExc) {
-                    Log.e(Constants.TAG_CONTACT, "Could not retrieve thumbnail for contact");
-                }
+                contactHelper.close();
             }
+
             // Load contacts thumbnail picture if available
             if (thumbnailBm == null) {
                 Bitmap defaultBm = BitmapHelper.getBitmapFromAttachment(convertView.getContext(), mAttachment, 128, 128);
@@ -167,6 +156,7 @@ public class AttachmentAdapter extends BaseAdapter {
                         .load(thumbnailBm)
                         .into(holder.image);
             }
+
         }else{
             // Starts the AsyncTask to draw bitmap into ImageView
             Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, mAttachment);
@@ -178,6 +168,9 @@ public class AttachmentAdapter extends BaseAdapter {
         }
         return convertView;
     }
+
+
+
 
 
 	public List<Attachment> getAttachmentsList() {
