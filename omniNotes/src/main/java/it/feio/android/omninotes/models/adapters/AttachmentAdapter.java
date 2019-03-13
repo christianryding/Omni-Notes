@@ -133,15 +133,15 @@ public class AttachmentAdapter extends BaseAdapter {
         if (mAttachment.getMime_type() != null && mAttachment.getMime_type().equals(Constants.MIME_TYPE_CONTACT)) {
 
             Bitmap thumbnailBm = null;
-
+            String name = "";
             if (ContextCompat.checkSelfPermission(convertView.getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 ContactHelper contactHelper = new ContactHelper(mAttachment, convertView.getContext());
-                String name = contactHelper.getName();
-                thumbnailBm = contactHelper.getContactPhoto(mAttachment,convertView);
-
-                holder.text.setText(name);
-                holder.text.setVisibility(View.VISIBLE);
-
+                if(contactHelper.contactExist()) {
+                    name = contactHelper.getName();
+                    thumbnailBm = contactHelper.getContactPhoto(mAttachment, convertView);
+                    holder.text.setText(name);
+                    holder.text.setVisibility(View.VISIBLE);
+                }
                 contactHelper.close();
             }
 

@@ -24,6 +24,7 @@ public class ContactHelper {
     private Context context;
     private String contactID;
     private Cursor contactCursor;
+    private boolean exist;
 
     /**
      * Constructor
@@ -34,8 +35,12 @@ public class ContactHelper {
     public ContactHelper(Attachment contactAttachment, Context context){
         this.context = context;
         this.contactCursor = context.getContentResolver().query(contactAttachment.getUri(), null, null, null, null);
-        contactCursor.moveToFirst();
-        this.contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
+        if(contactCursor.moveToFirst()) {
+            this.contactID = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts._ID));
+            exist = true;
+        }else{
+            exist = false;
+        }
     }
 
     /**
@@ -55,6 +60,15 @@ public class ContactHelper {
         }
 
         return helpers;
+    }
+
+    /**
+     * Do contact exist
+     *
+     * @return true if contact exist, false if not
+     */
+    public boolean contactExist(){
+        return exist;
     }
 
     /**
