@@ -794,6 +794,8 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 					mainActivity.showToast(getString(R.string.error_show_contact), Toast.LENGTH_LONG);
 				}
 
+
+
 			}else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
 					|| Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
@@ -2369,10 +2371,14 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
 	private void askReadContactsPermission() {
 
-		PermissionsHelper.requestPermission(getActivity(), Manifest.permission.READ_CONTACTS,
-					R.string.permission_contact_attachment,
-					snackBarPlaceholder, this::chooseContact);
+		PermissionsHelper.requestPermission(
+				getActivity()
+				, Manifest.permission.READ_CONTACTS
+				, R.string.permission_contact_attachment
+				, snackBarPlaceholder
+				, this::chooseContact);
 	}
+
 
 	public void onEventMainThread(PushbulletReplyEvent pushbulletReplyEvent) {
 		String text = getNoteContent() + System.getProperty("line.separator") + pushbulletReplyEvent.message;

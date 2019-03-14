@@ -53,6 +53,7 @@ public class AttachmentAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
 
+
     public AttachmentAdapter(Activity mActivity, List<Attachment> attachmentsList, ExpandableHeightGridView mGridView) {
         this.mActivity = mActivity;
 		if (attachmentsList == null) {
@@ -170,9 +171,6 @@ public class AttachmentAdapter extends BaseAdapter {
     }
 
 
-
-
-
 	public List<Attachment> getAttachmentsList() {
         return attachmentsList;
 	}
@@ -182,6 +180,4 @@ public class AttachmentAdapter extends BaseAdapter {
         TextView text;
         SquareImageView image;
     }
-
-
 }
