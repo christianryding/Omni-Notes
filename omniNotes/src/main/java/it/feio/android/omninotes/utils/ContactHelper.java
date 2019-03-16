@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
 
@@ -42,6 +43,8 @@ public class ContactHelper {
             contactExist = false;
         }
     }
+
+
 
     /**
      * Takes a note and returns a list of ContactHelper objects, one for each contact attachment.
