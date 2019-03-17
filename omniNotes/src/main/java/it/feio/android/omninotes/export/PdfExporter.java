@@ -20,66 +20,47 @@ import java.io.OutputStream;
  * - Long texts are not wrapped except for the note text.
  */
 public class PdfExporter extends ExporterBase {
-    /*
-     * Units
-     *
-     * PDF is using DPT(*) as units for specifying dimensions and coordinates. The obvious approach
-     * would be to use the same units for the Canvas too. Unfortunately doing so leads to irregular
-     * character spacing (precision problems?). This is solved by scaling down the canvas to be
-     * able to use bigger numbers as coordinates and font sizes when drawing the text on the canvas.
-     * This seems to work.
-     *
-     * Paper, margins and text sizes is specified in points. Those will be automatically scaled to
-     * correct canvas units when drawing.
-     *
-     * (*) https://en.wikipedia.org/wiki/Point_(typography)
-     *
-     */
+    // The dimensions and sizes is specified in DPT, units used by PDF.
+    // https://en.wikipedia.org/wiki/Point_(typography)
 
     /**
      * A4 paper width.
      * 210 / 25.4 * 72 = 595
      */
-    private static final int PAPER_WIDTH = 595;
+    private static final float PAPER_WIDTH = 595;
     /**
      * A4 paper height.
      * 297 / 25.4 * 72 = 842
      */
-    private static final int PAPER_HEIGHT = 842;
+    private static final float PAPER_HEIGHT = 842;
     /**
      * Left and right margin of the document.
      */
-    private static final int MARGIN_X = 50;
+    private static final float MARGIN_X = 50;
     /**
      * Top and bottom margin of the document.
      */
-    private static final int MARGIN_Y = 75;
-
+    private static final float MARGIN_Y = 75;
     /**
      * Title header font size
      */
-    private static final int TITLE_SIZE = 24;
+    private static final float TITLE_SIZE = 24;
     /**
      * Attachments header font size
      */
-    private static final int ATTACH_TITLE_SIZE = 18;
+    private static final float ATTACH_TITLE_SIZE = 18;
     /**
      * Headers in attachments section.
      */
-    private static final int ATTACH_SUBTITLE_SIZE = 14;
+    private static final float ATTACH_SUBTITLE_SIZE = 14;
     /**
      * Content text size, used for all text that is not headers.
      */
-    private static final int TEXT_SIZE = 12;
+    private static final float TEXT_SIZE = 12;
     /**
      * Space between lines. The spacing will be this multiplied with the text size.
      */
     private static final float LINE_SPACE = 0.3f;
-    /**
-     * Canvas scale compared to "PDF-scale"
-     */
-    private static final float CANVAS_SCALE = 0.2f;
-
     /**
      * Note that is exported.
      */
@@ -116,22 +97,22 @@ public class PdfExporter extends ExporterBase {
     public PdfExporter() {
         paintH1 = new Paint();
         paintH1.setColor(Color.BLACK);
-        paintH1.setTextSize(toCanvasUnits(TITLE_SIZE));
+        paintH1.setTextSize(TITLE_SIZE);
         paintH1.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         paintH2 = new Paint();
         paintH2.setColor(Color.BLACK);
-        paintH2.setTextSize(toCanvasUnits(ATTACH_TITLE_SIZE));
+        paintH2.setTextSize(ATTACH_TITLE_SIZE);
         paintH2.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         paintH3 = new Paint();
         paintH3.setColor(Color.BLACK);
-        paintH3.setTextSize(toCanvasUnits(ATTACH_SUBTITLE_SIZE));
+        paintH3.setTextSize(ATTACH_SUBTITLE_SIZE);
         paintH3.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         paintText = new Paint();
         paintText.setColor(Color.BLACK);
-        paintText.setTextSize(toCanvasUnits(TEXT_SIZE));
+        paintText.setTextSize(TEXT_SIZE);
         paintText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
     }
 
@@ -143,7 +124,7 @@ public class PdfExporter extends ExporterBase {
         document = new PdfDocument();
 
         // crate a page description
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(PAPER_WIDTH, PAPER_HEIGHT, 1).create();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder((int)PAPER_WIDTH, (int)PAPER_HEIGHT, 1).create();
 
         // start a page
         PdfDocument.Page page = document.startPage(pageInfo);
@@ -177,17 +158,7 @@ public class PdfExporter extends ExporterBase {
      * Translate the current drawing location to the top left corner.
      */
     private void setOriginTranslation() {
-        canvas.scale(CANVAS_SCALE, CANVAS_SCALE);
-        canvas.translate(toCanvasUnits(MARGIN_X), toCanvasUnits(MARGIN_Y));
-    }
-
-    /**
-     * Converts to from DTP to canvas units.
-     * @param dp DTP size
-     * @return dp in canvas units
-     */
-    private float toCanvasUnits(float dp) {
-        return dp / CANVAS_SCALE;
+        canvas.translate(MARGIN_X, MARGIN_Y);
     }
 
     /**
@@ -269,7 +240,7 @@ public class PdfExporter extends ExporterBase {
             StaticLayout layout = new StaticLayout(
                     text,
                     paint,
-                    (int)toCanvasUnits((float)(PAPER_WIDTH - MARGIN_X * 2)),
+                    (int)(PAPER_WIDTH - MARGIN_X * 2),
                     Layout.Alignment.ALIGN_NORMAL,
                     1.0f,
                     3.0f,
@@ -358,7 +329,7 @@ public class PdfExporter extends ExporterBase {
 
         // Translate to the page foot
         setOriginTranslation();
-        canvas.translate(0, toCanvasUnits((float)(PAPER_HEIGHT - MARGIN_Y * 2)));
+        canvas.translate(0, PAPER_HEIGHT - MARGIN_Y * 2);
 
         print(facade.getTimestamp(), paintText);
 
