@@ -11,7 +11,7 @@ As mentioned, the original Omni Notes source isn't very well documented. This gi
 
 ### DetailFragment
 
-When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the file to storage.
+When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the note to storage.
 
 ## Project Overview
 
@@ -28,8 +28,8 @@ Most of the code related to the exporting code is implemented in `it.feio.androi
 - [Exporter](@ref it.feio.android.omninotes.export.Exporter) interface used by the application to access exporter code. Used by [DetailFragment](@ref it.feio.android.omninotes.DetailFragment) class.
 - [ExporterBase](@ref it.feio.android.omninotes.export.ExporterBase) abstract class that implements exporter interface. This class in turn is implemnted by each file format implementation.
 - [ExporterFactory](@ref it.feio.android.omninotes.export.ExporterFactory) the application code doesn't directly instantiate the exporter implementations, instead this class should be used. Used by [DetailFragment](@ref it.feio.android.omninotes.DetailFragment) class.
-- [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) class is used by the exporter implementations to convert the information [Note](@ref it.feio.android.omninotes.models.Note) in a note to a human readable format.
-- [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) this class implements AsyncTask for exporting a note in the background. Used by the GUI-code when a note needs to be exported.
+- [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) class is used by the exporter implementations to convert the information in a [Note](@ref it.feio.android.omninotes.models.Note) object to a localized human readable format.
+- [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) this class implements AsyncTask for exporting a note in the background. Used by [DetailFragment](@ref it.feio.android.omninotes.DetailFragment) when a note needs to be exported.
 
 ### Exporter Tests
 
