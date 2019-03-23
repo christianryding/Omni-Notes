@@ -13,6 +13,10 @@ As mentioned, the original Omni Notes source isn't very well documented. This gi
 
 When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the file to storage.
 
+## Contact Attachment Overview
+
+- [ContactHelper](@ref it.feio.android.omninotes.utils.ContactHelper) this class is mainly used by [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) to get information about the contacts attached to the note.
+
 ## Exporter Overview
 
 Most of the code related to the exporting code is implemented in `it.feio.android.omninotes.export` package. This gives a brief overview:
