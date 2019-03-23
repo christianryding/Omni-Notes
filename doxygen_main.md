@@ -2,7 +2,7 @@
 
 This is mainly documentation for the code implementing the contact attachment functionality and note exporter. The documentation for Omni Notes original code is mostly undocumented, so documentation for this code consists of what doxygen auto-generates for undocumented code.
 
-## Omni Notes
+## Omni Notes Overview
 
 As mentioned, the original Omni Notes source isn't very well documented. This gives some information about Omni Notes classes used by source for this project.
 
@@ -13,11 +13,15 @@ As mentioned, the original Omni Notes source isn't very well documented. This gi
 
 When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the file to storage.
 
-## Contact Attachment Overview
+## Project Overview
 
-- [ContactHelper](@ref it.feio.android.omninotes.utils.ContactHelper) this class is mainly used by [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) to get information about the contacts attached to the note.
+Lists classes that implements the functionality related to the project to make it easier to navigate the documentation. The code that implements the GUI part of the project is desribed in the *DetailFragment* section above.
 
-## Exporter Overview
+### Contact Attachment
+
+- [ContactHelper](@ref it.feio.android.omninotes.utils.ContactHelper) this class is mainly used by [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) to get information about the contacts attached to a note.
+
+### Exporter
 
 Most of the code related to the exporting code is implemented in `it.feio.android.omninotes.export` package. This gives a brief overview:
 
@@ -27,7 +31,7 @@ Most of the code related to the exporting code is implemented in `it.feio.androi
 - [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) class is used by the exporter implementations to convert the information [Note](@ref it.feio.android.omninotes.models.Note) in a note to a human readable format.
 - [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) this class implements AsyncTask for exporting a note in the background. Used by the GUI-code when a note needs to be exported.
 
-## Exporter Tests Overview
+### Exporter Tests
 
 - [ExportTestBase](@ref it.feio.android.omninotes.ExportTestBase) base class for GUI part of the export. Each file format test implements this this class.
 - [ExporterNoteFacadeTest](@ref it.feio.android.omninotes.ExporterNoteFacadeTest) tests [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) class to make sure it returns the correct information.
