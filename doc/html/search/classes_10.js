@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['savenotetask',['SaveNoteTask',['../classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1SaveNoteTask.html',1,'it::feio::android::omninotes::async::notes']]],
+  ['security',['Security',['../classit_1_1feio_1_1android_1_1omninotes_1_1utils_1_1Security.html',1,'it::feio::android::omninotes::utils']]],
+  ['securitytest',['SecurityTest',['../classit_1_1feio_1_1android_1_1omninotes_1_1utils_1_1SecurityTest.html',1,'it::feio::android::omninotes::utils']]],
+  ['settingsactivity',['SettingsActivity',['../classit_1_1feio_1_1android_1_1omninotes_1_1SettingsActivity.html',1,'it::feio::android::omninotes']]],
+  ['settingsfragment',['SettingsFragment',['../classit_1_1feio_1_1android_1_1omninotes_1_1SettingsFragment.html',1,'it::feio::android::omninotes']]],
+  ['shortcutactivity',['ShortcutActivity',['../classit_1_1feio_1_1android_1_1omninotes_1_1ShortcutActivity.html',1,'it::feio::android::omninotes']]],
+  ['shortcuthelper',['ShortcutHelper',['../classit_1_1feio_1_1android_1_1omninotes_1_1utils_1_1ShortcutHelper.html',1,'it::feio::android::omninotes::utils']]],
+  ['simplewidgetprovider',['SimpleWidgetProvider',['../classit_1_1feio_1_1android_1_1omninotes_1_1widget_1_1SimpleWidgetProvider.html',1,'it::feio::android::omninotes::widget']]],
+  ['sketchfragment',['SketchFragment',['../classit_1_1feio_1_1android_1_1omninotes_1_1SketchFragment.html',1,'it::feio::android::omninotes']]],
+  ['sketchview',['SketchView',['../classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1views_1_1SketchView.html',1,'it::feio::android::omninotes::models::views']]],
+  ['snoozeactivity',['SnoozeActivity',['../classit_1_1feio_1_1android_1_1omninotes_1_1SnoozeActivity.html',1,'it::feio::android::omninotes']]],
+  ['springimporthelper',['SpringImportHelper',['../classit_1_1feio_1_1android_1_1omninotes_1_1helpers_1_1SpringImportHelper.html',1,'it::feio::android::omninotes::helpers']]],
+  ['sqlparser',['SqlParser',['../classit_1_1feio_1_1android_1_1omninotes_1_1db_1_1SqlParser.html',1,'it::feio::android::omninotes::db']]],
+  ['squareimageview',['SquareImageView',['../classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1views_1_1SquareImageView.html',1,'it::feio::android::omninotes::models::views']]],
+  ['stats',['Stats',['../classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1Stats.html',1,'it::feio::android::omninotes::models']]],
+  ['statsactivity',['StatsActivity',['../classit_1_1feio_1_1android_1_1omninotes_1_1StatsActivity.html',1,'it::feio::android::omninotes']]],
+  ['statssinglenote',['StatsSingleNote',['../classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1StatsSingleNote.html',1,'it::feio::android::omninotes::models']]],
+  ['storagehelper',['StorageHelper',['../classit_1_1feio_1_1android_1_1omninotes_1_1utils_1_1StorageHelper.html',1,'it::feio::android::omninotes::utils']]],
+  ['switchfragmentevent',['SwitchFragmentEvent',['../classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1bus_1_1SwitchFragmentEvent.html',1,'it::feio::android::omninotes::async::bus']]],
+  ['systemhelper',['SystemHelper',['../classit_1_1feio_1_1android_1_1omninotes_1_1utils_1_1SystemHelper.html',1,'it::feio::android::omninotes::utils']]]
+];

@@ -1,0 +1,8 @@
+<map id="it.feio.android.omninotes.DetailFragment" name="it.feio.android.omninotes.DetailFragment">
+<area shape="rect" id="node2" href="$classit_1_1feio_1_1android_1_1omninotes_1_1BaseFragment.html" title="it.feio.android.omninotes.\lBaseFragment" alt="" coords="181,5,349,47"/>
+<area shape="rect" id="node4" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnReminderPickedListener.html" title="it.feio.android.omninotes.models.listeners.\lOnReminderPickedListener" alt="" coords="132,71,399,112"/>
+<area shape="rect" id="node6" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnAttachingFileListener.html" title="it.feio.android.omninotes.models.listeners.\lOnAttachingFileListener" alt="" coords="132,188,399,229"/>
+<area shape="rect" id="node9" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnNoteSaved.html" title="it.feio.android.omninotes.models.listeners.\lOnNoteSaved" alt="" coords="132,356,399,397"/>
+<area shape="rect" id="node10" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnGeoUtilResultListener.html" title="it.feio.android.omninotes.models.listeners.\lOnGeoUtilResultListener" alt="" coords="132,421,399,463"/>
+<area shape="rect" id="node16" href="$classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1views_1_1ExpandableHeightGridView.html" title="it.feio.android.omninotes.models.views.\lExpandableHeightGridView" alt="" coords="139,741,391,783"/>
+</map>

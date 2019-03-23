@@ -1,0 +1,12 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1AttachmentTask.html" title="it.feio.android.omninotes.async.\lAttachmentTask" alt="" coords="159,5,366,47"/>
+<area shape="rect" id="node3" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1CategoryMenuTask.html" title="it.feio.android.omninotes.async.\lCategoryMenuTask" alt="" coords="159,71,366,112"/>
+<area shape="rect" id="node4" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1MainMenuTask.html" title="it.feio.android.omninotes.async.\lMainMenuTask" alt="" coords="159,136,366,177"/>
+<area shape="rect" id="node5" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1ExportNoteTask.html" title="it.feio.android.omninotes.async.notes.\lExportNoteTask" alt="" coords="141,201,384,243"/>
+<area shape="rect" id="node6" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteLoaderTask.html" title="it.feio.android.omninotes.async.notes.\lNoteLoaderTask" alt="" coords="141,267,384,308"/>
+<area shape="rect" id="node7" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteProcessor_1_1NotesProcessorTask.html" title="it.feio.android.omninotes.async.notes.\lNoteProcessor.NotesProcessorTask" alt="" coords="141,332,384,373"/>
+<area shape="rect" id="node8" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1SaveNoteTask.html" title="it.feio.android.omninotes.async.notes.\lSaveNoteTask" alt="" coords="141,397,384,439"/>
+<area shape="rect" id="node9" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1TextWorkerTask.html" title="it.feio.android.omninotes.async.\lTextWorkerTask" alt="" coords="159,463,366,504"/>
+<area shape="rect" id="node10" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1UpdaterTask.html" title="it.feio.android.omninotes.async.\lUpdaterTask" alt="" coords="159,528,366,569"/>
+<area shape="rect" id="node11" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1UpdateWidgetsTask.html" title="it.feio.android.omninotes.async.\lUpdateWidgetsTask" alt="" coords="159,593,366,635"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="it.feio.android.omninotes.ListFragment" name="it.feio.android.omninotes.ListFragment">
+<area shape="rect" id="node2" href="$classit_1_1feio_1_1android_1_1omninotes_1_1BaseFragment.html" title="it.feio.android.omninotes.\lBaseFragment" alt="" coords="620,5,788,47"/>
+<area shape="rect" id="node4" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnViewTouchedListener.html" title="it.feio.android.omninotes.models.listeners.\lOnViewTouchedListener" alt="" coords="571,71,837,112"/>
+<area shape="rect" id="node5" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1UndoBarController_1_1UndoListener.html" title="it.feio.android.omninotes.models.\lUndoBarController.UndoListener" alt="" coords="597,136,811,177"/>
+<area shape="rect" id="node6" href="$classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1views_1_1InterceptorLinearLayout.html" title="it.feio.android.omninotes.models.views.\lInterceptorLinearLayout" alt="" coords="578,201,830,243"/>
+<area shape="rect" id="node10" href="$classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1holders_1_1NoteViewHolder.html" title="it.feio.android.omninotes.models.holders.\lNoteViewHolder" alt="" coords="574,421,834,463"/>
+<area shape="rect" id="node12" href="$classit_1_1feio_1_1android_1_1omninotes_1_1models_1_1views_1_1SquareImageView.html" title="it.feio.android.omninotes.models.views.\lSquareImageView" alt="" coords="141,491,393,532"/>
+</map>

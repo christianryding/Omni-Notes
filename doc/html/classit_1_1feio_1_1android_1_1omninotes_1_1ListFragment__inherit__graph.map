@@ -1,0 +1,5 @@
+<map id="it.feio.android.omninotes.ListFragment" name="it.feio.android.omninotes.ListFragment">
+<area shape="rect" id="node2" href="$classit_1_1feio_1_1android_1_1omninotes_1_1BaseFragment.html" title="it.feio.android.omninotes.\lBaseFragment" alt="" coords="180,5,348,47"/>
+<area shape="rect" id="node4" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1listeners_1_1OnViewTouchedListener.html" title="it.feio.android.omninotes.models.listeners.\lOnViewTouchedListener" alt="" coords="131,71,397,112"/>
+<area shape="rect" id="node5" href="$interfaceit_1_1feio_1_1android_1_1omninotes_1_1models_1_1UndoBarController_1_1UndoListener.html" title="it.feio.android.omninotes.models.\lUndoBarController.UndoListener" alt="" coords="157,136,371,177"/>
+</map>

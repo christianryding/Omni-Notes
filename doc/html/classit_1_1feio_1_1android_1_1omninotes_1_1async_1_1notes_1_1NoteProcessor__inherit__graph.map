@@ -1,0 +1,6 @@
+<map id="it.feio.android.omninotes.async.notes.NoteProcessor" name="it.feio.android.omninotes.async.notes.NoteProcessor">
+<area shape="rect" id="node2" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteProcessorArchive.html" title="it.feio.android.omninotes.async.notes.\lNoteProcessorArchive" alt="" coords="296,5,539,47"/>
+<area shape="rect" id="node3" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteProcessorCategorize.html" title="it.feio.android.omninotes.async.notes.\lNoteProcessorCategorize" alt="" coords="296,71,539,112"/>
+<area shape="rect" id="node4" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteProcessorDelete.html" title="it.feio.android.omninotes.async.notes.\lNoteProcessorDelete" alt="" coords="296,136,539,177"/>
+<area shape="rect" id="node5" href="$classit_1_1feio_1_1android_1_1omninotes_1_1async_1_1notes_1_1NoteProcessorTrash.html" title="it.feio.android.omninotes.async.notes.\lNoteProcessorTrash" alt="" coords="296,201,539,243"/>
+</map>
