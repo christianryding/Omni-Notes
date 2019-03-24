@@ -11,7 +11,7 @@ As mentioned, the original Omni Notes source isn't very well documented. This gi
 
 ### DetailFragment
 
-When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the note to storage.
+When the user selects *Export* in the meny the `showExportPopup` is called initiate the export. The method start by showing a dialog to let the user select a file format. After the user has selected a format the method this then calls `handleExportPopupResult` to show the intent for choosing a filename. When the intent successfully returns the [ExportNoteTask](@ref it.feio.android.omninotes.async.notes.ExportNoteTask) will take over and export the note to storage. When the user chooses to attach a contact, it first checks if there is permission to read contact information. if there is not, it shows user a dialog. If permission exist it will start to show availble contact with help of intent and contacts application.
 
 ## Project Overview
 
@@ -19,7 +19,9 @@ Lists classes that implements the functionality related to the project to make i
 
 ### Contact Attachment
 
-- [ContactHelper](@ref it.feio.android.omninotes.utils.ContactHelper) this class is mainly used by [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) to get information about the contacts attached to a note.
+[ContactHelper](@ref it.feio.android.omninotes.utils.ContactHelper) this class is mainly used by [NoteFacade](@ref it.feio.android.omninotes.export.NoteFacade) to get information about the contacts attached to a note, but is also used by the contact attachment function to help retrieve information about a specific contact. 
+
+[AttachmentAdapter](@ref it.feio.android.omninotes.models.adapters.AttachmentAdapter) used to update text of attached contact and set contacts picture. 
 
 ### Exporter
 
